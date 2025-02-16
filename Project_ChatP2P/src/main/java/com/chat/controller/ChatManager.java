@@ -48,7 +48,16 @@ public class ChatManager {
      * @param peerId Id de la conexión Peer
      * @param peerConnection Conexión Peer
      */
-    public void handleConnection(String peerId, PeerConnection peerConnection) {
+    public void handleConnectionFromPeer(String peerId, PeerConnection peerConnection) {
+
+    }
+
+    /**
+     * Gestiona una conexión a otro Peer
+     * @param peerId Id de la conexión Peer
+     * @param peerConnection Conexión Peer
+     */
+    public void handleConnectionToPeer(String peerId, PeerConnection peerConnection) {
 
     }
 

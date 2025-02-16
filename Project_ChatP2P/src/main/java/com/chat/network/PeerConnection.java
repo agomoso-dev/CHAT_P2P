@@ -21,9 +21,16 @@ public class PeerConnection {
         this.socket = socket;
         this.peerId = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
 
-        this.output = new ObjectOutputStream(socket.getOutputStream());
-        this.input = new ObjectInputStream(socket.getInputStream());
-        this.connected = true;
+        try {
+            this.output = new ObjectOutputStream(socket.getOutputStream());
+            this.output.flush();
+
+            this.input = new ObjectInputStream(socket.getInputStream());
+
+            this.connected = true;
+        } catch(IOException ex) {
+            throw ex;
+        }
     }
 
     /**

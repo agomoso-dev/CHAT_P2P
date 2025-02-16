@@ -37,7 +37,7 @@ public class ChatClient {
     private void handleConnection(PeerConnection peerConnection) {
         String peerId = peerConnection.getPeerId();
 
-        ChatManager.getInstance().handleConnection(peerId, peerConnection);
+        //ChatManager.getInstance().handleConnectionToPeer(peerId, peerConnection);
     }
 
     /**

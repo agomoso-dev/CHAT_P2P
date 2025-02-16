@@ -131,7 +131,7 @@ public class ChatServer {
             System.out.println("Nueva conexión desde " + socket.getInetAddress().getHostAddress());
 
             PeerConnection peerConnection = new PeerConnection(socket);
-            registerConnection(peerConnection);
+            handleConnection(peerConnection);
 
             new Thread(new ClientHandler(peerConnection)).start();
         } catch (IOException ex) {
@@ -140,14 +140,15 @@ public class ChatServer {
     }
 
     /**
-     * Registra una conexión en el servidor, en el controlador de chat
+     * Gestiona una conexión externa, registrándola y avisando al controlador de chat
      * @param peerConnection Conexión externa
      */
-    private void registerConnection(PeerConnection peerConnection) {
+    private void handleConnection(PeerConnection peerConnection) {
         String peerId = peerConnection.getPeerId();
 
         activeConnections.put(peerId, peerConnection);
-        ChatManager.getInstance(port).handleConnection(peerId, peerConnection);
+        System.out.println(activeConnections.size());
+        ChatManager.getInstance(port).handleConnectionFromPeer(peerId, peerConnection);
     }
 
     /**
@@ -170,12 +171,28 @@ public class ChatServer {
         activeConnections.clear();
     }
 
+    /** Getters **/
+    public Map<String, PeerConnection> getActiveConnections() {
+        return activeConnections;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
     /** PRUEBA **/
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         ChatServer server = ChatServer.getInstance(5000);
         server.startServer();
 
-        Socket socket = new Socket("localhost", 5000);
+        ChatClient chatClient = new ChatClient();
+        chatClient.connect("localhost", 5000);
+
+        System.out.println("Cuenta " + server.getActiveConnections().size());
     }
 
 }
