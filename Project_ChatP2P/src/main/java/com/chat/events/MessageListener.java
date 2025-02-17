@@ -1,4 +1,4 @@
-package events;
+package com.chat.events;
 
 import com.chat.model.Message;
 

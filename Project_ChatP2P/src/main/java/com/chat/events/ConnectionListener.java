@@ -1,4 +1,4 @@
-package events;
+package com.chat.events;
 
 public interface ConnectionListener {
 

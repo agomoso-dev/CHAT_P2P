@@ -1,7 +1,6 @@
-package events;
+package com.chat.events;
 
 import com.chat.model.Message;
-import com.chat.network.PeerConnection;
 
 import java.util.ArrayList;
 
