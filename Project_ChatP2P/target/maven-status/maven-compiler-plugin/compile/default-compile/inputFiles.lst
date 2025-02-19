@@ -1,1 +1,16 @@
-C:\Users\jairo\Documents\REPOSITORIOS\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\Project_ChatP2P.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\controller\ChatManager.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\events\ConnectionListener.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\events\EventManager.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\events\MessageListener.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\Login.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\model\Message.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\network\ChatClient.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\network\ChatServer.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\network\ClientHandler.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\network\PeerConnection.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\Project_ChatP2P.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\storage\DatabaseManager.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\ui\console\txt.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\ui\gui\txt.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\utils\Constants.java
+C:\Users\wenfi\Documents\CHAT_P2P\Project_ChatP2P\CHAT_P2P\Project_ChatP2P\src\main\java\com\chat\VentanaPrincipal.java
