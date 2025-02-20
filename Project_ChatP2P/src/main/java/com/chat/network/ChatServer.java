@@ -17,7 +17,6 @@ public class ChatServer {
     /** Propiedades **/
     private static ChatServer instance;                              // Singleton del servidor
     private ServerSocket serverSocket;                               // Socket del servidor
-    private final Map<String, PeerConnection> activeConnections;     // Mapa de conexiones activas
     private final int port;                                          // Puerto del servidor
     private boolean running;                                         // Estado del servidor
 
@@ -33,7 +32,6 @@ public class ChatServer {
 
         this.port = port;
         this.running = false;
-        this.activeConnections = new ConcurrentHashMap<>();
     }
 
     /**
@@ -86,8 +84,6 @@ public class ChatServer {
     public void stopServer() {
         try {
             running = false;
-
-            closeConnections();
 
             if (serverSocket != null) {
                 serverSocket.close();
@@ -146,36 +142,12 @@ public class ChatServer {
     private void handleConnection(PeerConnection peerConnection) {
         String peerId = peerConnection.getPeerId();
 
-        activeConnections.put(peerId, peerConnection);
-        System.out.println(activeConnections.size());
         ChatManager.getInstance(port).handleConnectionFromPeer(peerId, peerConnection);
     }
 
     /**
-     * Elimina una conexión
-     * @param peerId Id de la conexión a eliminar
+     * Getters
      */
-    public void deletePeerConnection(String peerId) {
-        activeConnections.remove(peerId);
-    }
-
-    /**
-     * Cierra todas las conexiones activas. avisa al controlador de chat y limpia el registro de conexiones activas
-     */
-    private void closeConnections() {
-        for (PeerConnection connection : activeConnections.values()) {
-            connection.close();
-            ChatManager.getInstance().handleDisconnection(connection.getPeerId());
-        }
-
-        activeConnections.clear();
-    }
-
-    /** Getters **/
-    public Map<String, PeerConnection> getActiveConnections() {
-        return activeConnections;
-    }
-
     public int getPort() {
         return port;
     }
@@ -192,7 +164,6 @@ public class ChatServer {
         ChatClient chatClient = new ChatClient();
         chatClient.connect("localhost", 5000);
 
-        System.out.println("Cuenta " + server.getActiveConnections().size());
     }
 
 }

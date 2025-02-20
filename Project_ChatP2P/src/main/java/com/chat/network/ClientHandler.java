@@ -50,9 +50,6 @@ public class ClientHandler implements Runnable {
         String peerId = peerConnection.getPeerId();
 
         peerConnection.close();
-
-        ChatServer.getInstance().deletePeerConnection(peerId);
-
         ChatManager.getInstance().handleDisconnection(peerId);
 
         System.out.println("Cliente desconectado: " + peerId);
