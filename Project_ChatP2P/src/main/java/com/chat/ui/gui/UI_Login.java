@@ -4,23 +4,31 @@
  */
 package com.chat.ui.gui;
 
+import com.chat.ui.console.UI_Chat;
+import com.chat.ui.console.UI_Register;
 import java.awt.Color;
+import java.awt.Image;
+import java.net.URL;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author wenfi
  */
-public class Login extends javax.swing.JFrame {
+public class UI_Login extends javax.swing.JFrame {
     int xMouse, yMouse;
     /**
      * Creates new form Conexion
      */
-    public Login() {
+    public UI_Login() {
         initComponents();
         setLocationRelativeTo(null); 
-
     }
-
+    public JLabel getURLregister() {
+        return URLregister;
+    }
 
 
     /**
@@ -35,23 +43,18 @@ public class Login extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jEditorPane1 = new javax.swing.JEditorPane();
         bg = new javax.swing.JPanel();
-        TxtAppChat = new javax.swing.JLabel();
-        Imagen_Derecha = new javax.swing.JLabel();
-        TxtRealizarCon = new javax.swing.JLabel();
-        TxtIP = new javax.swing.JLabel();
-        IP = new javax.swing.JTextField();
-        IpSeparator = new javax.swing.JSeparator();
-        TxtPuerto = new javax.swing.JLabel();
-        Puerto = new javax.swing.JTextField();
-        PuertoSeparator = new javax.swing.JSeparator();
+        User = new javax.swing.JTextField();
+        UserSeparator = new javax.swing.JSeparator();
         Logo = new javax.swing.JLabel();
-        BtnEntrar = new javax.swing.JPanel();
+        BtnEnter = new javax.swing.JPanel();
         TxtEntrar = new javax.swing.JLabel();
-        Fondo_Derecha = new javax.swing.JPanel();
-        Avatar = new javax.swing.JLabel();
         header = new javax.swing.JPanel();
         Exitbtn = new javax.swing.JPanel();
         TxtExit = new javax.swing.JLabel();
+        TxtSessionStart = new javax.swing.JLabel();
+        TxtUser = new javax.swing.JLabel();
+        BtnRegister = new javax.swing.JPanel();
+        URLregister = new javax.swing.JLabel();
 
         jScrollPane1.setViewportView(jEditorPane1);
 
@@ -66,61 +69,22 @@ public class Login extends javax.swing.JFrame {
         bg.setRequestFocusEnabled(false);
         bg.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        TxtAppChat.setBackground(new java.awt.Color(255, 255, 255));
-        TxtAppChat.setFont(new java.awt.Font("Roboto Black", 0, 36)); // NOI18N
-        TxtAppChat.setForeground(new java.awt.Color(153, 204, 255));
-        TxtAppChat.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        TxtAppChat.setText("APP CHAT");
-        bg.add(TxtAppChat, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 180, 310, 40));
-
-        Imagen_Derecha.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mobile-phone-6721915_1280.png"))); // NOI18N
-        bg.add(Imagen_Derecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 170, 310, 380));
-
-        TxtRealizarCon.setFont(new java.awt.Font("Roboto Black", 0, 24)); // NOI18N
-        TxtRealizarCon.setText("REALIZAR CONEXIÓN");
-        bg.add(TxtRealizarCon, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 120, -1, -1));
-
-        TxtIP.setFont(new java.awt.Font("Roboto Light", 1, 14)); // NOI18N
-        TxtIP.setText("IP");
-        bg.add(TxtIP, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 170, 70, -1));
-
-        IP.setBackground(new java.awt.Color(153, 204, 255));
-        IP.setForeground(new java.awt.Color(153, 153, 153));
-        IP.setText("Ingrese la IP");
-        IP.setBorder(null);
-        IP.addMouseListener(new java.awt.event.MouseAdapter() {
+        User.setBackground(new java.awt.Color(153, 204, 255));
+        User.setForeground(new java.awt.Color(153, 153, 153));
+        User.setText("Ingrese el usuario");
+        User.setBorder(null);
+        User.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                IPMousePressed(evt);
+                UserMousePressed(evt);
             }
         });
-        IP.addActionListener(new java.awt.event.ActionListener() {
+        User.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                IPActionPerformed(evt);
+                UserActionPerformed(evt);
             }
         });
-        bg.add(IP, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, 420, 40));
-        bg.add(IpSeparator, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 240, 420, -1));
-
-        TxtPuerto.setFont(new java.awt.Font("Roboto Light", 1, 14)); // NOI18N
-        TxtPuerto.setText("PUERTO");
-        bg.add(TxtPuerto, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 270, 70, -1));
-
-        Puerto.setBackground(new java.awt.Color(153, 204, 255));
-        Puerto.setForeground(new java.awt.Color(153, 153, 153));
-        Puerto.setText("Ingrese el puerto");
-        Puerto.setBorder(null);
-        Puerto.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                PuertoMousePressed(evt);
-            }
-        });
-        Puerto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PuertoActionPerformed(evt);
-            }
-        });
-        bg.add(Puerto, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 300, 420, 40));
-        bg.add(PuertoSeparator, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 340, 420, -1));
+        bg.add(User, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 260, 420, 40));
+        bg.add(UserSeparator, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 300, 420, -1));
 
         Logo.setFont(new java.awt.Font("Roboto Black", 0, 48)); // NOI18N
         Logo.setForeground(new java.awt.Color(102, 153, 255));
@@ -128,7 +92,7 @@ public class Login extends javax.swing.JFrame {
         Logo.setText("WHATSABLUE");
         bg.add(Logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, -1, -1));
 
-        BtnEntrar.setBackground(new java.awt.Color(7, 134, 184));
+        BtnEnter.setBackground(new java.awt.Color(7, 134, 184));
 
         TxtEntrar.setFont(new java.awt.Font("Roboto Condensed", 1, 18)); // NOI18N
         TxtEntrar.setForeground(new java.awt.Color(255, 255, 255));
@@ -147,44 +111,22 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout BtnEntrarLayout = new javax.swing.GroupLayout(BtnEntrar);
-        BtnEntrar.setLayout(BtnEntrarLayout);
-        BtnEntrarLayout.setHorizontalGroup(
-            BtnEntrarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnEntrarLayout.createSequentialGroup()
+        javax.swing.GroupLayout BtnEnterLayout = new javax.swing.GroupLayout(BtnEnter);
+        BtnEnter.setLayout(BtnEnterLayout);
+        BtnEnterLayout.setHorizontalGroup(
+            BtnEnterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnEnterLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(TxtEntrar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-        BtnEntrarLayout.setVerticalGroup(
-            BtnEntrarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnEntrarLayout.createSequentialGroup()
+        BtnEnterLayout.setVerticalGroup(
+            BtnEnterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnEnterLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(TxtEntrar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        bg.add(BtnEntrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 400, 120, 40));
-
-        Fondo_Derecha.setBackground(new java.awt.Color(7, 134, 184));
-
-        Avatar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Avatar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/icono.png"))); // NOI18N
-
-        javax.swing.GroupLayout Fondo_DerechaLayout = new javax.swing.GroupLayout(Fondo_Derecha);
-        Fondo_Derecha.setLayout(Fondo_DerechaLayout);
-        Fondo_DerechaLayout.setHorizontalGroup(
-            Fondo_DerechaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(Fondo_DerechaLayout.createSequentialGroup()
-                .addComponent(Avatar, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        Fondo_DerechaLayout.setVerticalGroup(
-            Fondo_DerechaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, Fondo_DerechaLayout.createSequentialGroup()
-                .addContainerGap(44, Short.MAX_VALUE)
-                .addComponent(Avatar, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        bg.add(Fondo_Derecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 0, 310, 170));
+        bg.add(BtnEnter, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 400, 120, 40));
 
         header.setBackground(new java.awt.Color(153, 204, 255));
         header.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -243,22 +185,59 @@ public class Login extends javax.swing.JFrame {
             headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(headerLayout.createSequentialGroup()
                 .addComponent(Exitbtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 750, Short.MAX_VALUE))
+                .addGap(0, 450, Short.MAX_VALUE))
         );
         headerLayout.setVerticalGroup(
             headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(Exitbtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        bg.add(header, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 40));
+        bg.add(header, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 500, 40));
+
+        TxtSessionStart.setFont(new java.awt.Font("Roboto Black", 0, 24)); // NOI18N
+        TxtSessionStart.setText("INICIAR SESIÓN");
+        bg.add(TxtSessionStart, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 170, -1, -1));
+
+        TxtUser.setFont(new java.awt.Font("Roboto Light", 1, 14)); // NOI18N
+        TxtUser.setText("USUARIO");
+        bg.add(TxtUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 230, 70, -1));
+
+        BtnRegister.setBackground(new java.awt.Color(153, 204, 255));
+
+        URLregister.setBackground(new java.awt.Color(153, 204, 255));
+        URLregister.setFont(new java.awt.Font("Roboto Light", 1, 12)); // NOI18N
+        URLregister.setText("¿Aún no tienes usuario?Registrate aquí!");
+        URLregister.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
+        URLregister.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        URLregister.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                URLregisterMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout BtnRegisterLayout = new javax.swing.GroupLayout(BtnRegister);
+        BtnRegister.setLayout(BtnRegisterLayout);
+        BtnRegisterLayout.setHorizontalGroup(
+            BtnRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnRegisterLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(URLregister, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        BtnRegisterLayout.setVerticalGroup(
+            BtnRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(BtnRegisterLayout.createSequentialGroup()
+                .addComponent(URLregister, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        bg.add(BtnRegister, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 350, 230, 20));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(bg, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(bg, javax.swing.GroupLayout.PREFERRED_SIZE, 495, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -270,13 +249,9 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void IPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IPActionPerformed
+    private void UserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UserActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_IPActionPerformed
-
-    private void PuertoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PuertoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PuertoActionPerformed
+    }//GEN-LAST:event_UserActionPerformed
 
     private void headerMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_headerMousePressed
         xMouse = evt.getX();
@@ -307,39 +282,52 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_ExitbtnMouseClicked
 
     private void TxtEntrarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtEntrarMouseEntered
-        BtnEntrar.setBackground(new Color(102,153,255));
+        BtnEnter.setBackground(new Color(102,153,255));
     }//GEN-LAST:event_TxtEntrarMouseEntered
 
     private void TxtEntrarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtEntrarMouseExited
-        BtnEntrar.setBackground(new Color(7,134,184));
+        BtnEnter.setBackground(new Color(7,134,184));
     }//GEN-LAST:event_TxtEntrarMouseExited
 
-    private void IPMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_IPMousePressed
-        if(IP.getText().equals("Ingrese la IP")){
-            IP.setText("");
-            IP.setForeground(Color.black);
+    private void UserMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_UserMousePressed
+        if(User.getText().equals("Ingrese el usuario")){
+            User.setText("");
+            User.setForeground(Color.black);
         }
-        if(Puerto.getText().equals("")){
-            Puerto.setText("Ingrese el puerto");
-            Puerto.setForeground(new Color(153,153,153));
-        }
-    }//GEN-LAST:event_IPMousePressed
 
-    private void PuertoMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PuertoMousePressed
-        if(Puerto.getText().equals("Ingrese el puerto")){
-            Puerto.setText("");
-            Puerto.setForeground(Color.black);
-        }
-        if(IP.getText().equals("")){
-            IP.setText("Ingrese la IP");
-            IP.setForeground(new Color(153,153,153));
-        }
-    }//GEN-LAST:event_PuertoMousePressed
+    }//GEN-LAST:event_UserMousePressed
 
     private void TxtEntrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtEntrarMouseClicked
-        // TODO add your handling code here:
+        // Obtener el usuario ingresado
+        String usuario = User.getText().trim();
+        
+        // Cerrar ventana actual
+        this.dispose();
+        
+        // Abrir nueva ventana UI_AddContact
+        SwingUtilities.invokeLater(() -> {
+            UI_Chat connectionWindow = new UI_Chat();
+            connectionWindow.setVisible(true);
+        });    
     }//GEN-LAST:event_TxtEntrarMouseClicked
 
+    private void URLregisterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_URLregisterMouseClicked
+    // Cerrar ventana actual
+    this.dispose();
+    
+    // Abrir ventana de registro
+    SwingUtilities.invokeLater(() -> {
+        UI_Register registerWindow = new UI_Register();
+        registerWindow.setVisible(true);
+    });
+    }//GEN-LAST:event_URLregisterMouseClicked
+    private void URLregisterMouseEntered(java.awt.event.MouseEvent evt) {
+        URLregister.setForeground(new Color(102, 153, 255));
+    }
+    
+    private void URLregisterMouseExited(java.awt.event.MouseEvent evt) {
+        URLregister.setForeground(Color.black);
+    }
     /**
      * @param args the command line arguments
      */
@@ -357,42 +345,43 @@ public class Login extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI_Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI_Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI_Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI_Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Login().setVisible(true);
+                new UI_Login().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel Avatar;
-    private javax.swing.JPanel BtnEntrar;
+    private javax.swing.JPanel BtnEnter;
+    private javax.swing.JPanel BtnRegister;
     private javax.swing.JPanel Exitbtn;
-    private javax.swing.JPanel Fondo_Derecha;
-    private javax.swing.JTextField IP;
-    private javax.swing.JLabel Imagen_Derecha;
-    private javax.swing.JSeparator IpSeparator;
     private javax.swing.JLabel Logo;
-    private javax.swing.JTextField Puerto;
-    private javax.swing.JSeparator PuertoSeparator;
-    private javax.swing.JLabel TxtAppChat;
     private javax.swing.JLabel TxtEntrar;
     private javax.swing.JLabel TxtExit;
-    private javax.swing.JLabel TxtIP;
-    private javax.swing.JLabel TxtPuerto;
-    private javax.swing.JLabel TxtRealizarCon;
+    private javax.swing.JLabel TxtSessionStart;
+    private javax.swing.JLabel TxtUser;
+    private javax.swing.JLabel URLregister;
+    private javax.swing.JTextField User;
+    private javax.swing.JSeparator UserSeparator;
     private javax.swing.JPanel bg;
     private javax.swing.JPanel header;
     private javax.swing.JEditorPane jEditorPane1;
