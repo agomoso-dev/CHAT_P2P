@@ -8,7 +8,11 @@ com\chat\ui\console\UI_Register$4.class
 com\chat\ui\console\UI_AddContact$11.class
 com\chat\ui\console\txt.class
 com\chat\storage\FirebaseManager.class
+<<<<<<< Updated upstream
 com\chat\ui\gui\UI_Login$8.class
+=======
+com\chat\network\ChatServer.class
+>>>>>>> Stashed changes
 com\chat\events\ConnectionListener.class
 com\chat\model\Message$MessageType.class
 com\chat\ui\console\UI_AddContact$7.class
@@ -63,11 +67,15 @@ com\chat\network\PeerConnection.class
 com\chat\events\MessageListener.class
 com\chat\ui\gui\UI_Login$9.class
 com\chat\network\ChatClient.class
+<<<<<<< Updated upstream
 com\components\ScrollPanel\ModernScrollBarUI$1.class
 com\chat\ui\console\UI_Register$11.class
 com\chat\ui\console\UI_Register.class
 com\chat\ui\console\UI_Chat$1.class
 com\chat\ui\console\UI_Chat$4.class
 com\chat\ui\console\UI_AddContact$8.class
+=======
+com\chat\ui\gui\Login$4.class
+>>>>>>> Stashed changes
 com\chat\controller\ChatManager.class
 com\chat\ui\gui\UI_Login$2.class

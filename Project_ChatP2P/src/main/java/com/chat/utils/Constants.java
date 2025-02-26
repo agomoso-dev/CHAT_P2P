@@ -9,9 +9,10 @@ public class Constants {
     public static final int MIN_PORT = 1024;
     public static final int MAX_PORT = 65535;
 
-    /** CONFIGURACIÓN DE SQLITE **/
-    /** URL de SQLite **/
-    public static final String DB_URL = "jdbc:sqlite:chat.db";
-    public static final String CONTACTS_TABLE = "contacts";
+    /** Configuracion de Avatars **/
+    public static final long MAX_FILE_SIZE = 5 * 1024 * 1024;              // 5MB máximo
+    public static final int MAX_DIMENSION = 1024;                          // 1024px máximo
+    public static final int MIN_DIMENSION = 100;                           // 100px mínimo
+    public static final String[] ALLOWED_FORMATS = {"jpg", "jpeg", "png"};
 
 }
