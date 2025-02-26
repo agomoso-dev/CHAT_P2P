@@ -1,10 +1,9 @@
-package com.chat.network;
+package com.chat.network.socket;
 
 import com.chat.controller.ChatManager;
 import com.chat.model.Message;
 
 import java.io.IOException;
-import java.util.List;
 
 public class ClientHandler implements Runnable {
 

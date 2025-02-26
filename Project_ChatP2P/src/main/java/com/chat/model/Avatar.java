@@ -1,4 +1,4 @@
-package com.chat.media;
+package com.chat.model;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

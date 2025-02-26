@@ -1,7 +1,7 @@
 package com.chat.controller;
 
 import com.chat.model.Message;
-import com.chat.network.PeerConnection;
+import com.chat.network.socket.PeerConnection;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

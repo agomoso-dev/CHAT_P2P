@@ -5,6 +5,9 @@ package com.chat.utils;
  */
 public class Constants {
 
+    /** API **/
+    public static final String API_URL = "https://us-central1-chatp2p-60417.cloudfunctions.net";
+
     /** Configuración de puertos **/
     public static final int MIN_PORT = 1024;
     public static final int MAX_PORT = 65535;

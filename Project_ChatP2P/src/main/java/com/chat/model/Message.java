@@ -1,8 +1,9 @@
 package com.chat.model;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class Message {
+public class Message implements Serializable {
 
     // Enum para el tipo de Mensaje
     public enum MessageType {

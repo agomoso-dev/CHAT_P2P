@@ -1,4 +1,4 @@
-package com.chat.network;
+package com.chat.network.socket;
 
 import com.chat.model.Message;
 

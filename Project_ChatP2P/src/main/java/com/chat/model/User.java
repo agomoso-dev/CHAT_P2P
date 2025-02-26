@@ -1,7 +1,5 @@
 package com.chat.model;
 
-import com.chat.media.Avatar;
-
 import java.io.Serializable;
 
 public class User implements Serializable {

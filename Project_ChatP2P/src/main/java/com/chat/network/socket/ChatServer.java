@@ -1,13 +1,10 @@
-package com.chat.network;
+package com.chat.network.socket;
 
 import com.chat.controller.ChatManager;
-import com.chat.model.Message;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.chat.utils.Constants.MAX_PORT;
 import static com.chat.utils.Constants.MIN_PORT;
