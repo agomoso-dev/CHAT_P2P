@@ -2,12 +2,13 @@ package com.chat.model;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.chat.utils.Constants.*;
 
@@ -19,11 +20,12 @@ public class Avatar implements Serializable {
     private byte[] imageData;          // Datos de la imagen en memoria
 
     /** Constructor por parámetros **/
-    public Avatar(String localPath) throws IOException {
-        if (!isValid(localPath)) {
+    public Avatar(String localPath, String storageUrl) throws IOException {
+        /**if (!isValid(localPath)) {
             throw new IllegalArgumentException("Ruta no válida");
-        }
+        }*/
         this.localPath = localPath;
+        this.storageUrl = storageUrl;
         loadImage();
     }
 
@@ -46,11 +48,11 @@ public class Avatar implements Serializable {
             throw new IllegalArgumentException("Formato no permitido. Use: jpg, jpeg o png");
         }
 
-        if (!isValidDimensions(localPath)) {
+        /**if (!isValidDimensions(localPath)) {
             throw new IllegalArgumentException(
                     "Las dimensiones deben estar entre 100px y 1024px"
             );
-        }
+        }*/
 
         if (!isImageReadable(localPath)) {
             throw new IllegalArgumentException("La imagen está corrupta o no es válida");
@@ -120,8 +122,44 @@ public class Avatar implements Serializable {
      * Convierte el avatar de un usuario en bytes
      */
     public void loadImage() throws IOException {
-        File avatarFile = new File(localPath);
-        this.imageData = Files.readAllBytes(avatarFile.toPath());
+        imageData = localPath != null ? readImageFromLocalPath()
+                : storageUrl != null ? readImageFromUrl()
+                : null;
+    }
+
+    /**
+     * Convierte una imagen en bytes desde una ruta local
+     * @return Bytes de la imagen
+     */
+    public byte[] readImageFromLocalPath() {
+        try {
+            File avatarFile = new File(localPath);
+            System.out.println("Imagen leída desde localPath");
+            return Files.readAllBytes(avatarFile.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException("Error al leer la imagen");
+        }
+    }
+
+    /**
+     * Convierte una imagen en bytes desde una URL
+     * @return Bytes de la imagen
+     * @throws IOException si hay problemas al leer la imagen
+     */
+    public byte[] readImageFromUrl() throws IOException {
+        URL url = new URL(storageUrl);
+        try (InputStream in = url.openStream()) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+
+            System.out.println("Imagen leída desde URL");
+            return out.toByteArray();
+        }
     }
 
     /**
@@ -134,6 +172,19 @@ public class Avatar implements Serializable {
         }
 
         return Base64.getEncoder().encodeToString(imageData);
+    }
+
+    /**
+     * Convierte un avatar a un mapa de datos
+     * @return Mapa de datos
+     */
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("localPath", null);
+        map.put("storageUrl", storageUrl);
+        map.put("imageData", imageData != null ? toBase64() : null);
+
+        return map;
     }
 
     /**

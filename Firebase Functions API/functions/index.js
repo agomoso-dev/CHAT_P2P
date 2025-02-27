@@ -39,9 +39,9 @@ exports.addUser = functions.https.onRequest(async (req, res) => {
     try {
         let avatarUrl = null;
 
-        if (avatar) {
+        if (avatar && avatar.imageData) {
             const avatarFile = bucket.file(`avatars/${userId}.jpg`);
-            const avatarBuffer = Buffer.from(avatar, 'base64');
+            const avatarBuffer = Buffer.from(avatar.imageData, 'base64');
 
             await avatarFile.save(avatarBuffer, {
                 metadata: { contentType: 'image/jpeg' },
@@ -51,16 +51,32 @@ exports.addUser = functions.https.onRequest(async (req, res) => {
             avatarUrl = avatarFile.publicUrl();
         }
 
-        await db.collection('users').doc(userId).set({
+        const userData = {
             username,
             ip,
             port,
-            avatar: avatarUrl,
+            contacts: [],
             lastUpdated: admin.firestore.FieldValue.serverTimestamp()
-        });
+        };
 
-        const responseData = { userId };
-        if (avatarUrl) responseData.avatarUrl = avatarUrl;
+        if (avatarUrl) {
+            userData.avatar = {
+                localPath: null,
+                storageUrl: avatarUrl,
+                imageData: null
+            };
+        }
+
+        await db.collection('users').doc(userId).set(userData);
+
+        const responseData = {};
+        if (avatarUrl) {
+            responseData.avatar = {
+                localPath: null,
+                storageUrl: avatarUrl,
+                imageData: null
+            };
+        }
 
         return res.status(200).json({
             success: true,
@@ -103,14 +119,14 @@ exports.updateUser = functions.https.onRequest(async (req, res) => {
         if (port) updateData.port = port;
 
         let avatarUrl = null;
-        if (avatar) {
+        if (avatar && avatar.imageData) {
             try {
                 const avatarPath = `avatars/${userId}.jpg`;
                 const avatarFile = bucket.file(avatarPath);
 
                 await avatarFile.delete({ ignoreNotFound: true });
 
-                const avatarBuffer = Buffer.from(avatar, 'base64');
+                const avatarBuffer = Buffer.from(avatar.imageData, 'base64');
 
                 await avatarFile.save(avatarBuffer, {
                     metadata: { contentType: 'image/jpeg' },
@@ -119,7 +135,11 @@ exports.updateUser = functions.https.onRequest(async (req, res) => {
                 await avatarFile.makePublic();
                 avatarUrl = avatarFile.publicUrl();
 
-                updateData.avatar = avatarUrl;
+                updateData.avatar = {
+                    localPath: null,
+                    storageUrl: avatarUrl,
+                    imageData: null
+                }
             } catch (error) {
                 console.error(`Error al subir avatar: ${error}`);
                 return res.status(500).json({
@@ -145,7 +165,7 @@ exports.updateUser = functions.https.onRequest(async (req, res) => {
         return res.status(200).json({
             success: true,
             message: `Usuario ${userId} actualizado correctamente.`,
-            data: updateData
+            data: { user: updateData }
         });
 
     } catch (error) {
@@ -159,7 +179,7 @@ exports.updateUser = functions.https.onRequest(async (req, res) => {
 });
 
 /**
- * Agrega un contacto a un usuario
+ * Agrega un contacto a un usuario (relación bidireccional)
  */
 exports.addContact = functions.https.onRequest(async (req, res) => {
     if (req.method !== 'PATCH') {
@@ -179,16 +199,73 @@ exports.addContact = functions.https.onRequest(async (req, res) => {
         });
     }
 
+    if (userId === contactId) {
+        return res.status(400).json({
+            success: false,
+            message: "No puedes añadirte a ti mismo como contacto",
+            data: {}
+        });
+    }
+
     try {
         const userRef = db.collection('users').doc(userId);
-        await userRef.update({
-            contacts: admin.firestore.FieldValue.arrayUnion(contactId)
+        const contactRef = db.collection('users').doc(contactId);
+        
+        const [userDoc, contactDoc] = await Promise.all([
+            userRef.get(),
+            contactRef.get()
+        ]);
+
+        if (!userDoc.exists) {
+            return res.status(404).json({
+                success: false,
+                message: `Usuario ${userId} no encontrado`,
+                data: {}
+            });
+        }
+
+        if (!contactDoc.exists) {
+            return res.status(404).json({
+                success: false,
+                message: `Contacto ${contactId} no encontrado`,
+                data: {}
+            });
+        }
+
+        await db.runTransaction(async (transaction) => {
+            transaction.update(userRef, {
+                contacts: admin.firestore.FieldValue.arrayUnion(contactId),
+                lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            });
+            
+            transaction.update(contactRef, {
+                contacts: admin.firestore.FieldValue.arrayUnion(userId),
+                lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            });
         });
+
+        const contactData = contactDoc.data();
+        
+        const formattedContact = {
+            userId: contactId,
+            username: contactData.username,
+            ip: contactData.ip,
+            port: contactData.port,
+            avatar: contactData.avatar ? {
+                localPath: null,
+                storageUrl: contactData.avatar.storageUrl || null,
+                imageData: null
+            } : null
+        };
 
         return res.status(200).json({
             success: true,
-            message: `Contacto ${contactId} agregado a ${userId} correctamente.`,
-            data: { userId, contactId }
+            message: `Contacto agregado correctamente`,
+            data: { 
+                userId, 
+                contactId,
+                contact: formattedContact
+            }
         });
 
     } catch (error) {
@@ -234,10 +311,23 @@ exports.getUser = functions.https.onRequest(async (req, res) => {
             });
         }
 
+        let userData = userDoc.data();
+        let avatarObject = null;
+
+        if (userData.avatar) {
+            avatarObject = {
+                localPath: null,
+                storageUrl: userData.avatar.storageUrl || null,
+                imageData: null,
+            }
+        }
+
+        userData.avatar = avatarObject;
+
         return res.status(200).json({
             success: true,
             message: "Usuario encontrado",
-            data: userDoc.data()
+            data: { user: userData }
         });
 
     } catch (error) {
@@ -251,7 +341,7 @@ exports.getUser = functions.https.onRequest(async (req, res) => {
 });
 
 /**
- * Elimina un contacto de un usuario
+ * Elimina un contacto de un usuario (relación bidireccional)
  */
 exports.removeContact = functions.https.onRequest(async (req, res) => {
     if (req.method !== 'PATCH') {
@@ -274,7 +364,12 @@ exports.removeContact = functions.https.onRequest(async (req, res) => {
 
     try {
         const userRef = db.collection('users').doc(userId);
-        const userDoc = await userRef.get();
+        const contactRef = db.collection('users').doc(contactId);
+        
+        const [userDoc, contactDoc] = await Promise.all([
+            userRef.get(),
+            contactRef.get()
+        ]);
 
         if (!userDoc.exists) {
             return res.status(404).json({
@@ -284,9 +379,16 @@ exports.removeContact = functions.https.onRequest(async (req, res) => {
             });
         }
 
-        const contacts = userDoc.data().contacts || [];
-        
-        if (!contacts.includes(contactId)) {
+        if (!contactDoc.exists) {
+            return res.status(404).json({
+                success: false,
+                message: "Contacto no encontrado",
+                data: {}
+            });
+        }
+
+        const userContacts = userDoc.data().contacts || [];
+        if (!userContacts.includes(contactId)) {
             return res.status(400).json({
                 success: false,
                 message: `El usuario ${userId} no tiene agregado al contacto ${contactId}.`,
@@ -294,14 +396,40 @@ exports.removeContact = functions.https.onRequest(async (req, res) => {
             });
         }
 
-        await userRef.update({
-            contacts: admin.firestore.FieldValue.arrayRemove(contactId)
+        await db.runTransaction(async (transaction) => {
+            transaction.update(userRef, {
+                contacts: admin.firestore.FieldValue.arrayRemove(contactId),
+                lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            });
+            
+            transaction.update(contactRef, {
+                contacts: admin.firestore.FieldValue.arrayRemove(userId),
+                lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            });
         });
+
+        const contactData = contactDoc.data();
+        
+        const contact = {
+            userId: contactId,
+            username: contactData.username,
+            ip: contactData.ip,
+            port: contactData.port,
+            avatar: contactData.avatar ? {
+                localPath: null,
+                storageUrl: contactData.avatar.storageUrl || null,
+                imageData: null
+            } : null
+        };
 
         return res.status(200).json({
             success: true,
-            message: `Contacto ${contactId} eliminado de ${userId} correctamente.`,
-            data: { userId, contactId }
+            message: `Contacto eliminado correctamente (relación bidireccional)`,
+            data: { 
+                userId, 
+                contactId,
+                contact: contact
+            }
         });
 
     } catch (error) {
@@ -362,12 +490,33 @@ exports.getContacts = functions.https.onRequest(async (req, res) => {
         const contactDocs = await db.getAll(...contactRefs);
 
         const contactsData = contactDocs
-            .map(doc => doc.exists ? { userId: doc.id, ...doc.data() } : { error: "Contacto no encontrado" });
+            .filter(doc => doc.exists)
+            .map(doc => {
+                const contactData = doc.data();
+                return {
+                    userId: doc.id,
+                    username: contactData.username,
+                    ip: contactData.ip,
+                    port: contactData.port,
+                    avatar: contactData.avatar ? {
+                        localPath: null,
+                        storageUrl: contactData.avatar.storageUrl || null,
+                        imageData: null
+                    } : null,
+                    contacts: []
+                };
+            });
+
+        const foundContactsIds = contactsData.map(contact => contact.userId);
 
         return res.status(200).json({
             success: true,
             message: "Lista de contactos obtenida correctamente",
-            data: { contacts: contactsData }
+            data: { 
+                contacts: contactsData,
+                totalContacts: contactsData.length,
+                missingContacts: missingContactsIds.length
+            }
         });
 
     } catch (error) {
