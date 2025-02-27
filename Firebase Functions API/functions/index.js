@@ -28,56 +28,48 @@ const bucket = storage.bucket();   // Storage Bucket
  */
 exports.addUser = functions.https.onRequest(async (req, res) => {
     if (req.method !== 'POST') {
-        res.status(405).send('Método no permitido. Usa POST');
-        return;
+        return res.status(405).json({ success: false, message: 'Método no permitido. Usa POST', data: {} });
     }
 
     const { userId, username, ip, port, avatar } = req.body;
     if (!userId || !username || !ip || !port) {
-        res.status(400).send('Faltan datos obligatorios');
-        return;
+        return res.status(400).json({ success: false, message: 'Faltan datos obligatorios', data: {} });
     }
 
     try {
         let avatarUrl = null;
 
         if (avatar) {
-            try {
-                const avatarFile = bucket.file(`avatars/${userId}.jpg`);
-                const avatarBuffer = Buffer.from(avatar, 'base64');
+            const avatarFile = bucket.file(`avatars/${userId}.jpg`);
+            const avatarBuffer = Buffer.from(avatar, 'base64');
 
-                await avatarFile.save(avatarBuffer, {
-                    metadata: {
-                        contentType: 'image/jpeg',
-                    },
-                });
+            await avatarFile.save(avatarBuffer, {
+                metadata: { contentType: 'image/jpeg' },
+            });
 
-                await avatarFile.makePublic();
-                avatarUrl = avatarFile.publicUrl();
-            } catch (error) {
-                console.error(`Error al subir avatar: ${error}`);
-                res.status(500).send('Error al subir avatar');
-                return;
-            }
+            await avatarFile.makePublic();
+            avatarUrl = avatarFile.publicUrl();
         }
 
         await db.collection('users').doc(userId).set({
-            username: username,
-            ip: ip,
-            port: port,
+            username,
+            ip,
+            port,
             avatar: avatarUrl,
             lastUpdated: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        res.status(200).json({
+        const responseData = { userId };
+        if (avatarUrl) responseData.avatarUrl = avatarUrl;
+
+        return res.status(200).json({
+            success: true,
             message: 'Usuario agregado exitosamente',
-            userId,
-            avatarUrl
+            data: responseData
         });
 
     } catch (error) {
-        console.error('Error guardando usuario:', error);
-        res.status(500).send('Error al guardar el usuario en la base de datos');
+        return res.status(500).json({ success: false, message: 'Error al guardar usuario', error: error.message, data: {} });
     }
 });
 
@@ -86,14 +78,20 @@ exports.addUser = functions.https.onRequest(async (req, res) => {
  */
 exports.updateUser = functions.https.onRequest(async (req, res) => {
     if (req.method !== 'PATCH') {
-        res.status(405).json({ error: "Método no permitido. Usa PATCH" });
-        return;
+        return res.status(405).json({
+            success: false,
+            message: "Método no permitido. Usa PATCH",
+            data: {}
+        });
     }
 
     const { userId, username, ip, port, avatar } = req.body;
     if (!userId) {
-        res.status(400).json({ error: "Faltan datos obligatorios (userId)" });
-        return;
+        return res.status(400).json({
+            success: false,
+            message: "Faltan datos obligatorios (userId)",
+            data: {}
+        });
     }
 
     try {
@@ -115,9 +113,7 @@ exports.updateUser = functions.https.onRequest(async (req, res) => {
                 const avatarBuffer = Buffer.from(avatar, 'base64');
 
                 await avatarFile.save(avatarBuffer, {
-                    metadata: {
-                        contentType: 'image/jpeg',
-                    },
+                    metadata: { contentType: 'image/jpeg' },
                 });
 
                 await avatarFile.makePublic();
@@ -126,45 +122,61 @@ exports.updateUser = functions.https.onRequest(async (req, res) => {
                 updateData.avatar = avatarUrl;
             } catch (error) {
                 console.error(`Error al subir avatar: ${error}`);
-                res.status(500).json({ error: "Error al subir avatar", details: error.message });
-                return;
+                return res.status(500).json({
+                    success: false,
+                    message: "Error al subir avatar",
+                    data: { error: error.message }
+                });
             }
         }
 
         updateData.lastUpdated = admin.firestore.FieldValue.serverTimestamp();
 
         if (Object.keys(updateData).length === 1) {
-            res.status(400).json({ error: "No se enviaron datos para actualizar." });
-            return;
+            return res.status(400).json({
+                success: false,
+                message: "No se enviaron datos para actualizar.",
+                data: {}
+            });
         }
 
         await userRef.update(updateData);
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: `Usuario ${userId} actualizado correctamente.`,
-            updatedFields: updateData
+            data: updateData
         });
 
     } catch (error) {
-        res.status(500).json({ error: "Error al actualizar usuario", details: error.message });
+        console.error("Error al actualizar usuario:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error al actualizar usuario",
+            data: { error: error.message }
+        });
     }
 });
-
 
 /**
  * Agrega un contacto a un usuario
  */
 exports.addContact = functions.https.onRequest(async (req, res) => {
     if (req.method !== 'PATCH') {
-        res.status(405).json({ error: "Método no permitido. Usa PATCH" });
-        return;
+        return res.status(405).json({
+            success: false,
+            message: "Método no permitido. Usa PATCH",
+            data: {}
+        });
     }
 
     const { userId, contactId } = req.body;
     if (!userId || !contactId) {
-        res.status(400).json({ error: "Faltan datos obligatorios (userId, contactId)" });
-        return;
+        return res.status(400).json({
+            success: false,
+            message: "Faltan datos obligatorios (userId, contactId)",
+            data: {}
+        });
     }
 
     try {
@@ -173,13 +185,19 @@ exports.addContact = functions.https.onRequest(async (req, res) => {
             contacts: admin.firestore.FieldValue.arrayUnion(contactId)
         });
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
-            message: `Contacto ${contactId} agregado a ${userId} correctamente.`
+            message: `Contacto ${contactId} agregado a ${userId} correctamente.`,
+            data: { userId, contactId }
         });
 
     } catch (error) {
-        res.status(500).json({ error: "Error al agregar contacto", details: error.message });
+        console.error("Error al agregar contacto:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error al agregar contacto",
+            data: { error: error.message }
+        });
     }
 });
 
@@ -188,29 +206,47 @@ exports.addContact = functions.https.onRequest(async (req, res) => {
  */
 exports.getUser = functions.https.onRequest(async (req, res) => {
     if (req.method !== 'GET') {
-        res.status(405).json({ error: "Método no permitido. Usa GET" });
-        return;
+        return res.status(405).json({
+            success: false,
+            message: "Método no permitido. Usa GET",
+            data: {}
+        });
     }
 
     const { userId } = req.query;
     if (!userId) {
-        res.status(400).json({ error: "Faltan datos obligatorios (userId)" });
-        return;
+        return res.status(400).json({
+            success: false,
+            message: "Faltan datos obligatorios (userId)",
+            data: {}
+        });
     }
 
     try {
         const userRef = db.collection('users').doc(userId);
-        const userDoc = userRef.get();
+        const userDoc = await userRef.get();
 
         if (!userDoc.exists) {
-            res.status(404).json({ error: "Usuario no encontrado" });
-            return;
+            return res.status(404).json({
+                success: false,
+                message: "Usuario no encontrado",
+                data: {}
+            });
         }
 
-        res.status(200).json({ success: true, user: userDoc.data() });
+        return res.status(200).json({
+            success: true,
+            message: "Usuario encontrado",
+            data: userDoc.data()
+        });
 
     } catch (error) {
-        res.status(500).json({ error: "Error al obtener usuario", details: error.message });
+        console.error("Error al obtener usuario:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error al obtener usuario",
+            data: { error: error.message }
+        });
     }
 });
 
@@ -219,29 +255,62 @@ exports.getUser = functions.https.onRequest(async (req, res) => {
  */
 exports.removeContact = functions.https.onRequest(async (req, res) => {
     if (req.method !== 'PATCH') {
-        res.status(405).json({ error: "Método no permitido. Usa PATCH" });
-        return;
+        return res.status(405).json({
+            success: false,
+            message: "Método no permitido. Usa PATCH",
+            data: {}
+        });
     }
 
     const { userId, contactId } = req.body;
+
     if (!userId || !contactId) {
-        res.status(400).json({ error: "Faltan datos obligatorios (userId, contactId)" });
-        return;
+        return res.status(400).json({
+            success: false,
+            message: "Faltan datos obligatorios (userId, contactId)",
+            data: {}
+        });
     }
 
     try {
         const userRef = db.collection('users').doc(userId);
+        const userDoc = await userRef.get();
+
+        if (!userDoc.exists) {
+            return res.status(404).json({
+                success: false,
+                message: "Usuario no encontrado",
+                data: {}
+            });
+        }
+
+        const contacts = userDoc.data().contacts || [];
+        
+        if (!contacts.includes(contactId)) {
+            return res.status(400).json({
+                success: false,
+                message: `El usuario ${userId} no tiene agregado al contacto ${contactId}.`,
+                data: { userId, contactId }
+            });
+        }
+
         await userRef.update({
             contacts: admin.firestore.FieldValue.arrayRemove(contactId)
         });
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
-            message: `Contacto ${contactId} eliminado de ${userId} correctamente.`
+            message: `Contacto ${contactId} eliminado de ${userId} correctamente.`,
+            data: { userId, contactId }
         });
 
     } catch (error) {
-        res.status(500).json({ error: "Error al eliminar contacto", details: error.message });
+        console.error("Error al eliminar contacto:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error al eliminar contacto",
+            data: { error: error.message }
+        });
     }
 });
 
@@ -250,14 +319,21 @@ exports.removeContact = functions.https.onRequest(async (req, res) => {
  */
 exports.getContacts = functions.https.onRequest(async (req, res) => {
     if (req.method !== 'GET') {
-        res.status(405).json({ error: "Método no permitido. Usa GET" });
-        return;
+        return res.status(405).json({
+            success: false,
+            message: "Método no permitido. Usa GET",
+            data: {}
+        });
     }
 
     const { userId } = req.query;
+
     if (!userId) {
-        res.status(400).json({ error: "Faltan datos obligatorios (userId)" });
-        return;
+        return res.status(400).json({
+            success: false,
+            message: "Faltan datos obligatorios (userId)",
+            data: {}
+        });
     }
 
     try {
@@ -265,27 +341,41 @@ exports.getContacts = functions.https.onRequest(async (req, res) => {
         const userDoc = await userRef.get();
 
         if (!userDoc.exists) {
-            res.status(404).json({ error: "Usuario no encontrado" });
-            return;
+            return res.status(404).json({
+                success: false,
+                message: "Usuario no encontrado",
+                data: {}
+            });
         }
 
         const contacts = userDoc.data().contacts || [];
 
         if (contacts.length === 0) {
-            res.status(200).json({ success: true, contacts: [] });
-            return;
+            return res.status(200).json({
+                success: true,
+                message: "El usuario no tiene contactos.",
+                data: { contacts: [] }
+            });
         }
 
         const contactRefs = contacts.map(contactId => db.collection('users').doc(contactId));
         const contactDocs = await db.getAll(...contactRefs);
 
-        const contactsData = contactDocs.map(doc => 
-            doc.exists ? { userId: doc.id, ...doc.data() } : { error: "Contacto no encontrado" }
-        );
+        const contactsData = contactDocs
+            .map(doc => doc.exists ? { userId: doc.id, ...doc.data() } : { error: "Contacto no encontrado" });
 
-        res.status(200).json({ success: true, contacts: contactsData });
+        return res.status(200).json({
+            success: true,
+            message: "Lista de contactos obtenida correctamente",
+            data: { contacts: contactsData }
+        });
 
     } catch (error) {
-        res.status(500).json({ error: "Error al obtener contactos", details: error.message });
+        console.error("Error al obtener contactos:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error al obtener contactos",
+            data: { error: error.message }
+        });
     }
 });
