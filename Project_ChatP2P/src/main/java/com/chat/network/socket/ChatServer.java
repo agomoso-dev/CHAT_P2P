@@ -120,12 +120,14 @@ public class ChatServer {
         try {
             if (serverSocket.isClosed()) return;
 
+            System.out.println("Escuchando");
             Socket socket = serverSocket.accept();
             System.out.println("Nueva conexión desde " + socket.getInetAddress().getHostAddress());
 
             PeerConnection peerConnection = new PeerConnection(socket);
             handleConnection(peerConnection);
-
+            
+            System.out.println("Conexion creada");
             new Thread(new ClientHandler(peerConnection)).start();
         } catch (IOException ex) {
             System.out.println("Error aceptando conexión " + ex.getMessage());
@@ -138,8 +140,8 @@ public class ChatServer {
      */
     private void handleConnection(PeerConnection peerConnection) {
         String peerId = peerConnection.getPeerId();
-
-        ChatManager.getInstance(port).handleConnectionFromPeer(peerId, peerConnection);
+        
+        ChatManager.getInstance().handleConnectionFromPeer(peerId, peerConnection);
     }
 
     /**

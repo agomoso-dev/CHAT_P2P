@@ -4,6 +4,8 @@
 
 package com.chat;
 
+import com.chat.controller.ChatManager;
+
 /**
  *
  * @author wenfi
@@ -11,6 +13,6 @@ package com.chat;
 public class Project_ChatP2P {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        ChatManager chatManager = ChatManager.getInstance();
     }
 }

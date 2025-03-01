@@ -20,6 +20,7 @@ public class ClientHandler implements Runnable {
      */
     @Override
     public void run() {
+        System.out.println(peerConnection.isConnected());
         while (peerConnection.isConnected()) {
             try {
                 Message message = peerConnection.receiveMessage();

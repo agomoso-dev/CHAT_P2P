@@ -1,25 +1,26 @@
 package com.chat.model;
 
-import com.chat.network.api.ApiResponse;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class User implements Serializable {
 
     /** Propiedades **/
+    private static User currentUser;           // Instancia estática del usuario actual
+    
     private String userId;                     // Id de usuario
     private String username;                   // Nombre de usuario
     private String ip;                         // Ip del usuario
     private int port;                          // Puerto del usuario
     private Avatar avatar;                     // Avatar del usuario
-    private List<User> contacts;               // Lista de contactos del usuario
 
-    private static User currentUser;           // Instancia estática del usuario actual
+    @SerializedName("contacts")
+    private List<String> contactsIds;          // Lista de IDs de los contactos del usuario
 
     /** Constructor por parámetros **/
     public User(String userId, String username, String ip, int port, Avatar avatar) {
@@ -28,14 +29,7 @@ public class User implements Serializable {
         this.ip = ip;
         this.port = port;
         this.avatar = avatar;
-        this.contacts = new CopyOnWriteArrayList<>();
-    }
-
-    /**
-     * Inicializa el usuario actual de la sesión
-     */
-    public static void initializeCurrentUser(User user) {
-        currentUser = user;
+        this.contactsIds = new ArrayList();
     }
 
     /**
@@ -64,17 +58,7 @@ public class User implements Serializable {
             map.put("avatar", avatar.toMap());
         }
 
-        if (contacts != null && !contacts.isEmpty()) {
-            List<String> contactIds = new ArrayList<>();
-
-            for (User contact : contacts) {
-                contactIds.add(contact.getUserId());
-            }
-
-            map.put("contacts", contactIds);
-        } else {
-            map.put("contacts", new ArrayList<String>());
-        }
+        map.put("contacts", contactsIds);
 
         return map;
     }
@@ -82,6 +66,10 @@ public class User implements Serializable {
     /**
      * Getters y Setters
      */
+    public static void setCurrentUser(User currentUser) {
+        User.currentUser = currentUser;
+    }
+    
     public String getUserId() {
         return userId;
     }
@@ -122,11 +110,8 @@ public class User implements Serializable {
         this.avatar = avatar;
     }
 
-    public List<User> getContacts() { return contacts;}
+    public List<String> getContactsIds() { return contactsIds; }
 
-    public void setContacts(List<User> contacts) { this.contacts = contacts;}
+    public void setContactsIds(List<String> contactsIds) { this.contactsIds = contactsIds; }
 
-    public static void setCurrentUser(User currentUser) {
-        User.currentUser = currentUser;
-    }
 }

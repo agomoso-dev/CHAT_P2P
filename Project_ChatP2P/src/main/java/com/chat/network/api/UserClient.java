@@ -3,7 +3,6 @@ package com.chat.network.api;
 import com.chat.model.Avatar;
 import com.chat.model.User;
 import com.chat.utils.Constants;
-import org.checkerframework.checker.units.qual.C;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

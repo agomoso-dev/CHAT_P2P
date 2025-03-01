@@ -21,13 +21,23 @@ public class Avatar implements Serializable {
 
     /** Constructor por parámetros **/
     public Avatar(String localPath, String storageUrl) throws IOException {
-        /**if (!isValid(localPath)) {
+        if (localPath == null || localPath.trim().isEmpty()) {
+            this.localPath = null;
+            this.storageUrl = storageUrl;
+            this.imageData = null;
+            
+            return; 
+        }
+
+        if (!isValid(localPath)) {
             throw new IllegalArgumentException("Ruta no válida");
-        }*/
+        }
+
         this.localPath = localPath;
         this.storageUrl = storageUrl;
         loadImage();
     }
+
 
     /**
      * Comprueba si una imagen es válida

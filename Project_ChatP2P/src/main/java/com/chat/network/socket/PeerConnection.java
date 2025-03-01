@@ -1,5 +1,6 @@
 package com.chat.network.socket;
 
+import com.chat.controller.ChatManager;
 import com.chat.model.Message;
 
 import java.io.IOException;
@@ -45,6 +46,8 @@ public class PeerConnection {
         try {
             output.writeObject(message);
             output.flush();
+            
+            ChatManager.getInstance().handleMessageSent(peerId, message);
         } catch (IOException ex) {
             connected = false;
             throw ex;
@@ -61,7 +64,11 @@ public class PeerConnection {
         }
 
         try {
-            return (Message) input.readObject();
+            Message message = (Message) input.readObject();
+            
+            ChatManager.getInstance().handleMessageReceived(peerId, message);
+
+            return message;
         } catch (IOException | ClassNotFoundException ex) {
             connected = false;
             throw ex;

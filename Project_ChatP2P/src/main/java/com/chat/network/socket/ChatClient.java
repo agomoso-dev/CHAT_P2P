@@ -20,13 +20,21 @@ public class ChatClient {
      * @param port Puerto del peer al que se va a conectar
      * @throws IOException si hay error al conectar
      */
-    public void connect(String ip, int port) throws IOException {
-        Socket socket = new Socket(ip, port);
-        peerConnection = new PeerConnection(socket);
+    public void connect(String ip, int port) {
+        try {
+            System.out.println(ip);
+            System.out.println(port);
+            Socket socket = new Socket(ip, port);
+            System.out.println("Socket creado");
+            peerConnection = new PeerConnection(socket);
+            System.out.println("PeerConnection creado");
 
-        handleConnection(peerConnection);
+            handleConnection(peerConnection);
 
-        new Thread(new ClientHandler(peerConnection)).start();
+            new Thread(new ClientHandler(peerConnection)).start();
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     /**
@@ -56,6 +64,7 @@ public class ChatClient {
      */
     public void sendMessage(Message message) throws IOException {
         if (peerConnection != null && peerConnection.isConnected()) {
+            System.out.println("Enviando mensaje en ChatClient");
             peerConnection.sendMessage(message);
             handleMessageSent(message);
         } else {
