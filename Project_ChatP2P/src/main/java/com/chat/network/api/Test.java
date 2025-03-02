@@ -131,7 +131,6 @@ public class Test {
         
         public static void main(String[] args) throws UnknownHostException, IOException {
             System.out.println(InetAddress.getLocalHost().getHostAddress());
-            //Socket socket = new Socket("192.168.1.38", 10000);
         }
 
 

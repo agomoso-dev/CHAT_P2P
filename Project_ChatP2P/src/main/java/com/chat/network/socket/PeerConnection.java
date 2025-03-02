@@ -62,12 +62,10 @@ public class PeerConnection {
         if (!connected) {
             throw new IllegalStateException("La conexión no está activa");
         }
-
+        
         try {
             Message message = (Message) input.readObject();
             
-            ChatManager.getInstance().handleMessageReceived(peerId, message);
-
             return message;
         } catch (IOException | ClassNotFoundException ex) {
             connected = false;

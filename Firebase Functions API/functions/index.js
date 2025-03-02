@@ -69,14 +69,17 @@ exports.addUser = functions.https.onRequest(async (req, res) => {
 
         await db.collection('users').doc(userId).set(userData);
 
-        const responseData = {};
-        if (avatarUrl) {
-            responseData.avatar = {
+        const responseData = {
+            userId,
+            username,
+            ip,
+            port,
+            avatar: avatarUrl ? {
                 localPath: null,
                 storageUrl: avatarUrl,
                 imageData: null
-            };
-        }
+            } : null
+        };
 
         return res.status(200).json({
             success: true,
@@ -161,6 +164,8 @@ exports.updateUser = functions.https.onRequest(async (req, res) => {
         }
 
         await userRef.update(updateData);
+
+        updateData.userId = userId;
 
         return res.status(200).json({
             success: true,
@@ -312,6 +317,7 @@ exports.getUser = functions.https.onRequest(async (req, res) => {
         }
 
         let userData = userDoc.data();
+        userData.userId = userId;
         let avatarObject = null;
 
         if (userData.avatar) {
@@ -515,7 +521,6 @@ exports.getContacts = functions.https.onRequest(async (req, res) => {
             data: { 
                 contacts: contactsData,
                 totalContacts: contactsData.length,
-                missingContacts: missingContactsIds.length
             }
         });
 
