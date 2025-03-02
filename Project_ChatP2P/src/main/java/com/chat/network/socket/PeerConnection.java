@@ -1,6 +1,5 @@
 package com.chat.network.socket;
 
-import com.chat.controller.ChatManager;
 import com.chat.model.Message;
 
 import java.io.IOException;
@@ -46,8 +45,6 @@ public class PeerConnection {
         try {
             output.writeObject(message);
             output.flush();
-            
-            ChatManager.getInstance().handleMessageSent(peerId, message);
         } catch (IOException ex) {
             connected = false;
             throw ex;
@@ -110,4 +107,19 @@ public class PeerConnection {
         return peerId;
     }
 
+    /** Equals y HashCode **/
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        PeerConnection that = (PeerConnection) obj;
+        return peerId != null && peerId.equals(that.peerId); 
+    }
+
+    @Override
+    public int hashCode() {
+        return peerId != null ? peerId.hashCode() : 0;
+    }
+    
 }

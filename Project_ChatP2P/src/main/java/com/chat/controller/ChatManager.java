@@ -1,8 +1,10 @@
 package com.chat.controller;
 
 import com.chat.model.Avatar;
+import com.chat.model.ChatSession;
 import com.chat.model.Message;
 import static com.chat.model.Message.MessageType.CONNECTION;
+import com.chat.model.MessageEntry;
 import com.chat.model.User;
 import com.chat.network.api.UserClient;
 import com.chat.network.socket.ChatClient;
@@ -29,6 +31,9 @@ public class ChatManager {
     private Map<String, ChatClient> chatClients;            // Conexiones a Peers activas
     private Map<String, User> contacts;                     // Lista de contactos
     private Map<String, String> contactIdToPeerIdMap;       // Mapa que relaciona el ID de un contacto con el ID de su Peer
+    
+    private PeerConnection actualPeer;                      // Conexión Peer con la que se está chateando actualmente
+    private Map<String, ChatSession> chatSessions;          // Sesiones de Chat activas
     
     private int localPort;                                  // Puerto local
 
@@ -57,6 +62,8 @@ public class ChatManager {
         this.chatClients = new ConcurrentHashMap<>();
         this.contacts = new ConcurrentHashMap<>();
         this.contactIdToPeerIdMap = new ConcurrentHashMap<>();
+        
+        this.chatSessions = new ConcurrentHashMap<>();
         
         this.uiController = new UIController();
     }
@@ -179,7 +186,7 @@ public class ChatManager {
             
             peerConnection.sendMessage(userInfo);
         } catch(IOException ex) {
-            //System.out.println("Error enviando información de usuario: " + ex.getMessage());
+            System.out.println("Error enviando información de usuario: " + ex.getMessage());
         }
     }
 
@@ -198,7 +205,10 @@ public class ChatManager {
             if (success && isContact(contactId)) {
                 String existingPeerId = contactIdToPeerIdMap.get(contactId);
                 if (existingPeerId == null) {
+                    System.out.println("Actualizando Panel");
                     uiController.updateContactPanel(contactId, contactId, true);
+                } else {
+                    System.out.println("No actualizando");
                 }
             }
         }).start();
@@ -217,11 +227,13 @@ public class ChatManager {
             chatClient.connect(ip, port);
 
             String contactId = ip + ":" + port;
-            String peerId = chatClient.getPeerConnection().getPeerId();
             
-            connections.put(peerId, chatClient.getPeerConnection());
-            chatClients.put(peerId, chatClient);
-            contactIdToPeerIdMap.put(contactId, peerId);
+            registerNewConnection(contactId, chatClient);
+            System.out.println("SIZE");
+            System.out.println(connections.size());
+            System.out.println(chatClients.size());
+            System.out.println(contacts.size());
+            System.out.println(chatSessions.size());
             
             uiController.showMessage("Conectado exitosamente a " + contactId);
             
@@ -285,7 +297,8 @@ public class ChatManager {
                 chatClients.remove(contactId);
                 chatClients.remove(actualPeerId);
                 contactIdToPeerIdMap.remove(contactId);
-
+                chatSessions.remove(User.getCurrentUser().getUserId() + ":" + contactId);
+                
                 uiController.showMessage("Desconexión realizada");
                 uiController.updateContactPanel(contactId, actualPeerId, false);
             }
@@ -312,7 +325,8 @@ public class ChatManager {
                 handleDisconnectionMessageReceived(peerId, message);
                 break;
             case TEXT:
-                uiController.onMessageReceived(peerId, message);
+                System.out.println("Mensaje de texto recibido");
+                handleTextMessageReceived(peerId, message);
                 break;
             case FILE:
                 //handleFileMessage(peerId, message);
@@ -334,11 +348,13 @@ public class ChatManager {
     private void handleUserInfoMessageReceived(String peerId, Message message) {
         User contactUser = message.getUserData();
         String contactId = contactUser.getUserId();
+        String currentUserId = User.getCurrentUser().getUserId();
         
         contactIdToPeerIdMap.put(contactId, peerId);
-        System.out.println("get" + contactIdToPeerIdMap.get(contactId));
-        
+        chatSessions.put(currentUserId + ":" + contactId, getOrCreateChatSession(contactId));
+
         if (isContact(contactId)){
+            uiController.updateContactPanel(contactId, peerId, true);
             return;
         }
 
@@ -349,6 +365,7 @@ public class ChatManager {
                 @Override
                 public void onSuccess(User result) {
                     contacts.put(contactId, result);
+
                     
                     if (!chatClients.containsKey(peerId)) {
                         PeerConnection conn = connections.get(peerId);
@@ -410,27 +427,88 @@ public class ChatManager {
         if (chatClient != null) {
             chatClients.remove(contactId);
         }
+        
+        String chatSessionId = User.getCurrentUser().getUserId() + ":" + contactId;
+        ChatSession chatSession = chatSessions.get(chatSessionId);
+        if (chatSession != null){
+            chatSessions.remove(chatSessionId);
+        }
 
         contactIdToPeerIdMap.remove(contactId);
+        chatSessions.remove(User.getCurrentUser().getUserId() + ":" + contactId);
         
-        System.out.println("SIZE");
-            System.out.println(connections.size());
-            System.out.println(chatClients.size());
-            System.out.println(contactIdToPeerIdMap.size());
-            System.out.println(contacts.size());
-
         uiController.updateContactPanel(contactId, peerId, false);
-        uiController.showMessage(contactUser.getUsername() + " se ha desconectado.");
+        if (actualPeer != null && actualPeer.getPeerId().equals(peerId)){
+            actualPeer = null;
+            uiController.showMessage(contactUser.getUsername() + " se ha desconectado. No tienes ningun chat seleccionado");
+        } else {
+            uiController.showMessage(contactUser.getUsername() + " se ha desconectado.");
+        }
+    }
+    
+    /**
+     * Gestiona la recepción de un mensaje de texto, actualizando la interfaz
+     * 
+     * @param message Mensaje recibido
+     * @param peerId ID del Peer que ha enviuado el mensaje
+     */
+    private void handleTextMessageReceived(String peerId, Message message) {
+        User contact = getContactByPeerId(peerId);
+        
+        ChatSession chatSession = getChatSessionByPeerId(peerId);
+        MessageEntry messageEntry = new MessageEntry(contact, message);
+        chatSession.addMessage(contact, messageEntry);
+        
+        PeerConnection peerConnection = connections.get(peerId);
+        if (actualPeer != null && peerConnection.equals(actualPeer)) {
+            uiController.displayTextMessage(messageEntry);
+        }
+    }
+    
+    /**
+     * Establece el contacto actual con el que se va a chatear y se actualiza la interfaz con el historial de mensajes.
+     * 
+     * @param peerId ID del Peer actual
+     */
+    public void handleSelectedContact(String peerId){
+        setActualPeerConnection(peerId);
+        
+        String contactId = getContactByPeerId(peerId).getUserId();
+        String sessionId = User.getCurrentUser().getUserId() + ":" + contactId;
+        
+        ChatSession chatSession = chatSessions.get(sessionId);
+        List<MessageEntry> messageHistory = chatSession.getMessageHistory();
+        
+        uiController.setContactPanelAsSelected(contactId);
+        uiController.displayChat(messageHistory);
     }
 
     /**
      * Gestiona la salida de un mensaje
      *
-     * @param peerId Id de la conexión Peer
-     * @param message Mensaje enviado
+     * @param message Mensaje a enviar
      */
-    public void handleMessageSent(String peerId, Message message) {
+    public void handleMessageSent(Message message) {
+        if (actualPeer == null) {
+            uiController.showErrorMessage("No hay un contacto seleccionado para enviar el mensaje");
+            return;
+        }
 
+        try {
+            actualPeer.sendMessage(message);
+            
+            User contact = getContactByPeerId(actualPeer.getPeerId());
+            if (contact != null) {
+                ChatSession chatSession = getOrCreateChatSession(contact.getUserId());
+                MessageEntry messageEntry = new MessageEntry(User.getCurrentUser(), message);
+                
+                chatSession.addMessage(User.getCurrentUser(), messageEntry);
+            }
+
+            uiController.displayTextMessage(new MessageEntry(User.getCurrentUser(), message));
+        } catch (IOException ex) {
+            Logger.getLogger(ChatManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     /**
@@ -536,9 +614,7 @@ public class ChatManager {
      * @param peerId ID de la conexión Peer
      * @return Contacto si existe, null en caso contarrio
      */
-    private User findContactByPeerId(String peerId){
-        System.out.println(contactIdToPeerIdMap.size());
-        System.out.println("PEE" + peerId);
+    private User getContactByPeerId(String peerId){
         String contactId = null;
         
         for (Map.Entry<String, String> entry : contactIdToPeerIdMap.entrySet()) {
@@ -547,8 +623,6 @@ public class ChatManager {
                 break; 
             }
         }
-        
-        if (contactId == null) return null;
         
         return contacts.get(contactId);
     }
@@ -560,7 +634,7 @@ public class ChatManager {
      * @param peerId ID de la conexión Peer
      */
     public void handleUnexpectedDisconnection(String peerId) {
-        User contactUser = findContactByPeerId(peerId);
+        User contactUser = getContactByPeerId(peerId);
         if (contactUser == null) return;
         
         String contactId = contactUser.getUserId();
@@ -578,15 +652,86 @@ public class ChatManager {
         }
 
         contactIdToPeerIdMap.remove(contactId);
-        
-        System.out.println("SIZE");
-            System.out.println(connections.size());
-            System.out.println(chatClients.size());
-            System.out.println(contactIdToPeerIdMap.size());
-            System.out.println(contacts.size());
+        String chatSessionId = User.getCurrentUser().getUserId() + ":" + contactId;
+        chatSessions.remove(chatSessionId);
 
         uiController.updateContactPanel(contactId, peerId, false);
-        uiController.showMessage(contactUser.getUsername() + " se ha desconectado.");
+        if (actualPeer != null && actualPeer.getPeerId().equals(peerId)){
+            actualPeer = null;
+            uiController.showMessage(contactUser.getUsername() + " se ha desconectado. No tienes ningun chat seleccionado");
+        } else {
+            uiController.showMessage(contactUser.getUsername() + " se ha desconectado.");
+        }
+    }
+     
+    /**
+     * Registra una nueva conexión en los mapas de conexiones.
+     * 
+     * @param contactId ID del Contacto a registrar
+     * @param chatClient ChatClient creado con el Contacto
+     */
+    private void registerNewConnection(String contactId, ChatClient chatClient){
+        String currentUserId = User.getCurrentUser().getUserId();
+        String peerId = chatClient.getPeerConnection().getPeerId();
+        
+        connections.put(peerId, chatClient.getPeerConnection());
+        chatClients.put(peerId, chatClient);
+        contactIdToPeerIdMap.put(contactId, peerId);
+        
+        chatSessions.put(currentUserId + ":" + contactId, new ChatSession(contactId));
     }
     
+    /**
+     * Devuelve una Sesión de Chat por su ID
+     * 
+     * @param sessionId ID de la Sesión de Chat
+     * @return ChatSession registrada con ese ID
+     */
+    private ChatSession getChatSessionById(String sessionId){
+        return chatSessions.get(sessionId);
+    }
+    
+    /**
+     * Devuelve una Sesión de Chat por el ID de un Peer
+     * 
+     * @param peerId ID del Peer
+     * @return ChatSession registrada para ese Peer
+     */
+    private ChatSession getChatSessionByPeerId(String peerId){
+        User peerContact = getContactByPeerId(peerId);
+        ChatSession chatSession = getOrCreateChatSession(peerContact.getUserId());
+        
+        return chatSession;
+    }
+    
+    /**
+     * Crea una Sesión de Chat si no hay ninguna registrada con el mismo ID y la devuelve.
+     * 
+     * @param contactId ID del contacto con el que se crea la Sesión de Chat
+     * @return Sesión de Chat
+     */
+    private ChatSession getOrCreateChatSession(String contactId) {
+        String sessionId = User.getCurrentUser().getUserId() + ":" + contactId;
+
+        if (!chatSessions.containsKey(sessionId)) {
+            chatSessions.put(sessionId, new ChatSession(contactId));
+        }
+
+        return chatSessions.get(sessionId);
+    }
+    
+    /**
+     * Establece el Peer actual con el que se está chateando
+     * @param peerId ID del Peer actual
+     */
+    private void setActualPeerConnection(String peerId){
+        System.out.println(peerId + "-2");
+        PeerConnection connection = connections.get(peerId);
+        if (connection != null && connection.isConnected()) {
+            actualPeer = connection;
+        } else {
+            uiController.showErrorMessage("No hay una conexión activa con este contacto");
+            actualPeer = null;
+        }
+    }
 }

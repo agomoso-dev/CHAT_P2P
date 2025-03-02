@@ -2,6 +2,7 @@ package com.chat.ui.gui;
 
 import com.chat.model.Message;
 import com.chat.model.Message.MessageType;
+import com.chat.model.MessageEntry;
 import com.chat.model.User;
 import com.components.contactPanel.ContactPanel;
 
@@ -26,7 +27,7 @@ public class Chat extends javax.swing.JFrame {
     int xMouse, yMouse;
     
     List<User> contacts;                            // Lista de contactos
-    Map<String, ContactPanel> contactsPanels;        // Lista de contactos
+    Map<String, ContactPanel> contactsPanels;       // Lista de contactos
 
     /**
      * Constructor
@@ -37,6 +38,15 @@ public class Chat extends javax.swing.JFrame {
         
         initComponents();
         setLocationRelativeTo(null);
+        
+        setTextAreaConfig();
+    }
+    
+    /** Configura los ajustes del TextArea del Chat **/
+    private void setTextAreaConfig(){
+        TxtChatArea.setFont(new Font("Arial", Font.PLAIN, 16));
+        TxtChatArea.setForeground(Color.BLACK);
+        TxtChatArea.setDisabledTextColor(Color.BLACK);
     }
 
     /** Métodos adicionales **/
@@ -72,6 +82,10 @@ public class Chat extends javax.swing.JFrame {
         return btnAddContact;
     }
     
+    public JButton getBtnProfile() {
+        return btnProfile;
+    }
+    
     /** Datos de Mensaje **/
     
     public Message getMessage() {
@@ -82,24 +96,14 @@ public class Chat extends javax.swing.JFrame {
     
     /** Actualizar interfaz **/
     
-    public void displayMessage(Message message) {
-        switch(message.getType()) {
-            case MessageType.TEXT:
-                displayTextMessage(message.getContent());
-                break;
-            case MessageType.SYSTEM:
-                displaySystemMessage(message.getContent());
-                break;
-            case MessageType.FILE:
-                displayFileMessage(message.getAttachedFile());
-                break;
-            default:
-        }
-    }
-    
-    private void displayTextMessage(String message) {
+    public void displayTextMessage(MessageEntry messageEntry) {
         String content = TxtChatArea.getText();
-        TxtChatArea.setText(content + System.lineSeparator() + message);
+        String message =
+            "\s[" + messageEntry.getTimestamp() + "] " + 
+            messageEntry.getSender().getUsername() + ": " + 
+            messageEntry.getMessage().getContent() + "\n";
+
+        TxtChatArea.setText(content + message);
     }
     
     private void displaySystemMessage(String message) {
@@ -127,14 +131,30 @@ public class Chat extends javax.swing.JFrame {
         pnlContacts.repaint();
     }
     
-    public void displayChat(List<Message> messages){
-        for (Message message : messages) {
-            switch(message.getType()) {
-            
+    public void displayChat(List<MessageEntry> messageHistory) {
+        TxtChatArea.setText("");
+        
+        if (messageHistory.size() > 0) {
+            for (MessageEntry messageEntry : messageHistory) {
+                String content = TxtChatArea.getText();
+                
+                String timestamp = messageEntry.getTimestamp();
+                String senderUsername = messageEntry.getSender().getUsername();
+                String text = messageEntry.getMessage().getContent();
+                
+                if (senderUsername.equals(User.getCurrentUser().getUsername())) {
+                    senderUsername = "Yo";
+                }
+                String message =
+                        "[" + timestamp + "] " + 
+                        senderUsername + ": " + 
+                        text + "\n";
+
+                TxtChatArea.setText(content + message);
             }
         }
     }
-    
+
     public void createPanelContact(User contact, String peerId) {
         ContactPanel panel = new ContactPanel(contact);
         panel.setConnected(peerId);
@@ -163,6 +183,21 @@ public class Chat extends javax.swing.JFrame {
         for (Component comp : components) {
             if (comp instanceof Box.Filler) {
                 pnlContacts.remove(comp);
+            }
+        }
+    }
+    
+    public void clearMessageTextField() {
+        MessageTxt.setText("");
+    }
+    
+    public void setContactPanelAsSelected(String contactId) {
+        for (Map.Entry<String, ContactPanel> entry : contactsPanels.entrySet()) {
+            ContactPanel panel = entry.getValue();
+            if (entry.getKey().equals(contactId)) {
+                panel.setAsSelected(true);
+            } else {
+                panel.setAsSelected(false);
             }
         }
     }
@@ -435,7 +470,6 @@ public class Chat extends javax.swing.JFrame {
         TxtChatArea.setEditable(false);
         TxtChatArea.setColumns(20);
         TxtChatArea.setRows(5);
-        TxtChatArea.setEnabled(false);
         jScrollPaneChatArea.setViewportView(TxtChatArea);
 
         bg.add(jScrollPaneChatArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, 530, 360));

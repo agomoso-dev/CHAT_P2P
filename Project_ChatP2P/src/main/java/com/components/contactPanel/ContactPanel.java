@@ -118,8 +118,8 @@ public class ContactPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (ChatManager.getInstance() != null) {
-                    //ChatManager.getInstance().selectContact(user.getUserId());
+                if (ChatManager.getInstance() != null && peerId != null) {
+                    ChatManager.getInstance().handleSelectedContact(peerId);
                 }
             }
         });
@@ -132,8 +132,6 @@ public class ContactPanel extends JPanel {
                 }
             } else {
                 if (peerId != null && ChatManager.getInstance() != null) {
-                    System.out.println("USEEER ID " + user.getUserId());
-                    System.out.println("PEEER ID " + peerId);
                     ChatManager.getInstance().handleDisconnection(user.getUserId(), peerId);
                 }
             }
@@ -239,6 +237,19 @@ public class ContactPanel extends JPanel {
         this.peerId = peerId;
         
         SwingUtilities.invokeLater(this::displayUserInfo);
+    }
+    
+    /**
+     * Marca como seleccionado el Panel de Contacto cambiando el color de fondo
+     * 
+     * @param selected Define si está seleccionado o no
+     */
+    public void setAsSelected(boolean selected) {
+        if (selected) {
+            setBackground(Color.yellow);
+        } else {
+            setBackground(Color.WHITE);
+        }
     }
     
     // Getters y Setters

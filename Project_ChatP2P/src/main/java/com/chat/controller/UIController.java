@@ -8,10 +8,12 @@ import com.chat.events.ConnectionListener;
 import com.chat.events.MessageListener;
 import com.chat.model.Message;
 import com.chat.model.Message.MessageType;
+import com.chat.model.MessageEntry;
 import com.chat.model.User;
 import com.chat.ui.gui.AddContact;
 import com.chat.ui.gui.Chat;
 import com.chat.ui.gui.Login;
+import com.chat.ui.gui.Profile;
 import com.chat.ui.gui.Register;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +41,7 @@ public class UIController implements ConnectionListener, MessageListener {
     private Register registerWindow;       // Ventana de Registro
     private Chat chatWindow;               // Ventana del Chat
     private AddContact addContactWindow;   // Ventana de Añadir Contacto
+    private Profile profileWindow;         // Ventana de Perfil
 
     public UIController() {
         initializeWindows();
@@ -55,6 +58,7 @@ public class UIController implements ConnectionListener, MessageListener {
         registerWindow = new Register();
         chatWindow = new Chat();
         addContactWindow = new AddContact();
+        profileWindow = new Profile();
     }
 
     /**
@@ -65,6 +69,7 @@ public class UIController implements ConnectionListener, MessageListener {
         initializeRegisterWindowListeners();
         initializeChatWindowListeners();
         initializeAddContactWindowListeners();
+        initializeProfileWindowListeners();
     }
 
     /**
@@ -144,15 +149,45 @@ public class UIController implements ConnectionListener, MessageListener {
         chatWindow.getBtnSendMessage().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                //manageMessageSent();
+                manageMessageSent();
             }
             
+        });
+        
+        chatWindow.getBtnProfile().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showProfileWindow();
+            }
+        });
+    }
+    
+    /** Inicializa los listeners de la ventana de Perfil **/
+    private void initializeProfileWindowListeners(){
+        profileWindow.getBtnGoChat().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                showChatWindow();
+            }
+        });
+        
+        profileWindow.getBtnExit().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.exit(0);
+            }
+        });
+        
+        profileWindow.getBtnUpdate().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                //manageUpdateProfile();
+            }
         });
     }
     
     public void displayContacts(List<User> contacts) {
         chatWindow.setContactsList(contacts);
-        chatWindow.displayMessage(new Message("HOLA", MessageType.TEXT));
     }
     
     /** Inicializa los listeners de la ventana de Añadir Contactos **/
@@ -213,8 +248,9 @@ public class UIController implements ConnectionListener, MessageListener {
     /** Gestiona el flujo de enviar un mensaje en la app **/
     private void manageMessageSent() {
         Message message = chatWindow.getMessage();
+        chatWindow.clearMessageTextField();
         
-        //ChatManager.getInstance().handleMessageSent(peerId, message);
+        ChatManager.getInstance().handleMessageSent(message);
     }
     
     /** Gestiona el flujo de añadir un nuevo contacto en la app **/
@@ -249,6 +285,7 @@ public class UIController implements ConnectionListener, MessageListener {
         loginWindow.dispose();
         registerWindow.dispose();
         addContactWindow.dispose();
+        profileWindow.dispose();
         chatWindow.setVisible(true);
     }
     
@@ -256,6 +293,12 @@ public class UIController implements ConnectionListener, MessageListener {
     private void showAddContactWindow() {
         chatWindow.setVisible(false);
         addContactWindow.setVisible(true);
+    }
+    
+    /** Muestra la ventana de Perfil ocultando la de Chat **/
+    private void showProfileWindow() {
+        chatWindow.setVisible(false);
+        profileWindow.setVisible(true);
     }
 
     /** MÉTODOS PARA ACTUALIZAR LA INTERFAZ **/
@@ -273,6 +316,21 @@ public class UIController implements ConnectionListener, MessageListener {
     /** Actualiza un Panel de Contacto **/
     public void updateContactPanel(String userId, String peerId, boolean connected) {
         chatWindow.updateContactPanel(userId, peerId, connected);
+    }
+    
+    /** Establece el panel del Peer seleccionado como marcado **/
+    public void setContactPanelAsSelected(String contactId){
+        chatWindow.setContactPanelAsSelected(contactId);
+    }
+    
+    /** Muestra un chat en la pantalla de Chat **/
+    public void displayChat(List<MessageEntry> messageHistory){
+        chatWindow.displayChat(messageHistory);
+    }
+    
+    /** Muestra una entrada de mensaje de texto en la pantalla de Chat **/
+    public void displayTextMessage(MessageEntry messageEntry){
+        chatWindow.displayTextMessage(messageEntry);
     }
 
     /** MÉTODOS PARA NOTIFICAR AL USUARIO **/

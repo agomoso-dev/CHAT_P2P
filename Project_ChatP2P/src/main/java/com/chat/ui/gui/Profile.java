@@ -4,13 +4,10 @@
  */
 package com.chat.ui.gui;
 
-import com.chat.model.User;
 
 import java.awt.Color;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -21,7 +18,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  *
  * @author wenfi
  */
-public class Register extends javax.swing.JFrame {
+public class Profile extends javax.swing.JFrame {
 
     /** Propiedades **/
     int xMouse, yMouse;
@@ -30,7 +27,7 @@ public class Register extends javax.swing.JFrame {
     /**
      * Constructor
      */
-    public Register() {
+    public Profile() {
         avatarPath = "";
 
         initComponents();
@@ -41,12 +38,12 @@ public class Register extends javax.swing.JFrame {
      * Botones *
      */
     
-    public JLabel getBtnGoLogin() {
-        return TxtGoLogin;
+    public JLabel getBtnGoChat() {
+        return TxtGoChat;
     }
 
-    public JLabel getBtnRegister() {
-        return TxtRegister;
+    public JLabel getBtnUpdate() {
+        return TxtUpdate;
     }
 
     public JLabel getBtnExit() {
@@ -92,13 +89,13 @@ public class Register extends javax.swing.JFrame {
         header = new javax.swing.JPanel();
         BtnExit = new javax.swing.JPanel();
         TxtExit = new javax.swing.JLabel();
-        BtnGoLogin = new javax.swing.JPanel();
-        TxtGoLogin = new javax.swing.JLabel();
+        BtnGoChat = new javax.swing.JPanel();
+        TxtGoChat = new javax.swing.JLabel();
         Logo = new javax.swing.JLabel();
         User = new javax.swing.JTextField();
         UserSeparator = new javax.swing.JSeparator();
-        BtnRegister = new javax.swing.JPanel();
-        TxtRegister = new javax.swing.JLabel();
+        BtnUpdate = new javax.swing.JPanel();
+        TxtUpdate = new javax.swing.JLabel();
         TxtPort = new javax.swing.JLabel();
         Port = new javax.swing.JTextField();
         UserSeparator1 = new javax.swing.JSeparator();
@@ -186,46 +183,46 @@ public class Register extends javax.swing.JFrame {
 
         bg.add(header, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 480, 40));
 
-        BtnGoLogin.setBackground(new java.awt.Color(7, 134, 184));
+        BtnGoChat.setBackground(new java.awt.Color(7, 134, 184));
 
-        TxtGoLogin.setFont(new java.awt.Font("Roboto Condensed", 1, 18)); // NOI18N
-        TxtGoLogin.setForeground(new java.awt.Color(255, 255, 255));
-        TxtGoLogin.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        TxtGoLogin.setText("<<");
-        TxtGoLogin.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        TxtGoLogin.addMouseListener(new java.awt.event.MouseAdapter() {
+        TxtGoChat.setFont(new java.awt.Font("Roboto Condensed", 1, 18)); // NOI18N
+        TxtGoChat.setForeground(new java.awt.Color(255, 255, 255));
+        TxtGoChat.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        TxtGoChat.setText("<<");
+        TxtGoChat.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        TxtGoChat.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TxtGoLoginMouseClicked(evt);
+                TxtGoChatMouseClicked(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                TxtGoLoginMouseEntered(evt);
+                TxtGoChatMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                TxtGoLoginMouseExited(evt);
+                TxtGoChatMouseExited(evt);
             }
         });
 
-        javax.swing.GroupLayout BtnGoLoginLayout = new javax.swing.GroupLayout(BtnGoLogin);
-        BtnGoLogin.setLayout(BtnGoLoginLayout);
-        BtnGoLoginLayout.setHorizontalGroup(
-            BtnGoLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnGoLoginLayout.createSequentialGroup()
+        javax.swing.GroupLayout BtnGoChatLayout = new javax.swing.GroupLayout(BtnGoChat);
+        BtnGoChat.setLayout(BtnGoChatLayout);
+        BtnGoChatLayout.setHorizontalGroup(
+            BtnGoChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnGoChatLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(TxtGoLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(TxtGoChat, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-        BtnGoLoginLayout.setVerticalGroup(
-            BtnGoLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnGoLoginLayout.createSequentialGroup()
+        BtnGoChatLayout.setVerticalGroup(
+            BtnGoChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnGoChatLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(TxtGoLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(TxtGoChat, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        bg.add(BtnGoLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 40, 40));
+        bg.add(BtnGoChat, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 40, 40));
 
         Logo.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 48)); // NOI18N
         Logo.setForeground(new java.awt.Color(51, 102, 255));
         Logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/LOGO.png"))); // NOI18N
-        Logo.setText("REGISTRAR");
+        Logo.setText("PERFIL");
         bg.add(Logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 40, -1, -1));
 
         User.setBackground(new java.awt.Color(153, 204, 255));
@@ -245,41 +242,39 @@ public class Register extends javax.swing.JFrame {
         bg.add(User, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 170, 240, 40));
         bg.add(UserSeparator, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 217, 230, -1));
 
-        BtnRegister.setBackground(new java.awt.Color(7, 134, 184));
+        BtnUpdate.setBackground(new java.awt.Color(7, 134, 184));
 
-        TxtRegister.setFont(new java.awt.Font("Roboto Condensed", 1, 18)); // NOI18N
-        TxtRegister.setForeground(new java.awt.Color(255, 255, 255));
-        TxtRegister.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        TxtRegister.setText("REGISTRAR");
-        TxtRegister.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        TxtRegister.addMouseListener(new java.awt.event.MouseAdapter() {
+        TxtUpdate.setFont(new java.awt.Font("Roboto Condensed", 1, 18)); // NOI18N
+        TxtUpdate.setForeground(new java.awt.Color(255, 255, 255));
+        TxtUpdate.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        TxtUpdate.setText("ACTUALIZAR");
+        TxtUpdate.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        TxtUpdate.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TxtRegisterMouseClicked(evt);
+                TxtUpdateMouseClicked(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                TxtRegisterMouseEntered(evt);
+                TxtUpdateMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                TxtRegisterMouseExited(evt);
+                TxtUpdateMouseExited(evt);
             }
         });
 
-        javax.swing.GroupLayout BtnRegisterLayout = new javax.swing.GroupLayout(BtnRegister);
-        BtnRegister.setLayout(BtnRegisterLayout);
-        BtnRegisterLayout.setHorizontalGroup(
-            BtnRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnRegisterLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(TxtRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+        javax.swing.GroupLayout BtnUpdateLayout = new javax.swing.GroupLayout(BtnUpdate);
+        BtnUpdate.setLayout(BtnUpdateLayout);
+        BtnUpdateLayout.setHorizontalGroup(
+            BtnUpdateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(TxtUpdate, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
         );
-        BtnRegisterLayout.setVerticalGroup(
-            BtnRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnRegisterLayout.createSequentialGroup()
+        BtnUpdateLayout.setVerticalGroup(
+            BtnUpdateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnUpdateLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(TxtRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(TxtUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        bg.add(BtnRegister, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 370, 120, 40));
+        bg.add(BtnUpdate, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 370, 130, 40));
 
         TxtPort.setFont(new java.awt.Font("Roboto Black", 0, 24)); // NOI18N
         TxtPort.setText("Puerto");
@@ -383,30 +378,30 @@ public class Register extends javax.swing.JFrame {
     private void BtnExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnExitMouseClicked
     }//GEN-LAST:event_BtnExitMouseClicked
 
-    private void TxtRegisterMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtRegisterMouseEntered
-        BtnRegister.setBackground(new Color(102, 153, 255));
-    }//GEN-LAST:event_TxtRegisterMouseEntered
+    private void TxtUpdateMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtUpdateMouseEntered
+        BtnUpdate.setBackground(new Color(102, 153, 255));
+    }//GEN-LAST:event_TxtUpdateMouseEntered
 
-    private void TxtRegisterMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtRegisterMouseExited
-        BtnRegister.setBackground(new Color(7, 134, 184));
-    }//GEN-LAST:event_TxtRegisterMouseExited
+    private void TxtUpdateMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtUpdateMouseExited
+        BtnUpdate.setBackground(new Color(7, 134, 184));
+    }//GEN-LAST:event_TxtUpdateMouseExited
 
-    private void TxtRegisterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtRegisterMouseClicked
+    private void TxtUpdateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtUpdateMouseClicked
         
-    }//GEN-LAST:event_TxtRegisterMouseClicked
+    }//GEN-LAST:event_TxtUpdateMouseClicked
 
-    private void TxtGoLoginMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtGoLoginMouseClicked
+    private void TxtGoChatMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtGoChatMouseClicked
        
-     }//GEN-LAST:event_TxtGoLoginMouseClicked
+     }//GEN-LAST:event_TxtGoChatMouseClicked
 
-    private void TxtGoLoginMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtGoLoginMouseEntered
-        BtnGoLogin.setBackground(new Color(102, 153, 255));
-    }//GEN-LAST:event_TxtGoLoginMouseEntered
+    private void TxtGoChatMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtGoChatMouseEntered
+        BtnGoChat.setBackground(new Color(102, 153, 255));
+    }//GEN-LAST:event_TxtGoChatMouseEntered
 
-    private void TxtGoLoginMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtGoLoginMouseExited
-        BtnGoLogin.setBackground(new Color(7, 134, 184));
+    private void TxtGoChatMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtGoChatMouseExited
+        BtnGoChat.setBackground(new Color(7, 134, 184));
 
-    }//GEN-LAST:event_TxtGoLoginMouseExited
+    }//GEN-LAST:event_TxtGoChatMouseExited
 
     private void UserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UserActionPerformed
         // TODO add your handling code here:
@@ -488,14 +483,46 @@ public class Register extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Register.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Profile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Register.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Profile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Register.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Profile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Register.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Profile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -532,23 +559,23 @@ public class Register extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Register().setVisible(true);
+                new Profile().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel BtnExit;
-    private javax.swing.JPanel BtnGoLogin;
+    private javax.swing.JPanel BtnGoChat;
     private javax.swing.JPanel BtnMas;
-    private javax.swing.JPanel BtnRegister;
+    private javax.swing.JPanel BtnUpdate;
     private javax.swing.JLabel Logo;
     private javax.swing.JTextField Port;
     private javax.swing.JLabel TxtExit;
-    private javax.swing.JLabel TxtGoLogin;
+    private javax.swing.JLabel TxtGoChat;
     private javax.swing.JLabel TxtMas;
     private javax.swing.JLabel TxtPort;
-    private javax.swing.JLabel TxtRegister;
+    private javax.swing.JLabel TxtUpdate;
     private javax.swing.JLabel TxtUser;
     private javax.swing.JTextField User;
     private javax.swing.JSeparator UserSeparator;

@@ -39,7 +39,8 @@ public class ClientHandler implements Runnable {
      */
     private void handleMessageReceived(Message message) {
         String peerId = peerConnection.getPeerId();
-
+        
+        System.out.println("MENSAJE RECIBIDO");
         ChatManager.getInstance().handleMessageReceived(peerId, message);
     }
 
