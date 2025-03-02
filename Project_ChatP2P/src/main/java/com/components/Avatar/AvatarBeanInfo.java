@@ -1,4 +1,4 @@
-package com.components.Avatar;
+package com.components.avatar;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;

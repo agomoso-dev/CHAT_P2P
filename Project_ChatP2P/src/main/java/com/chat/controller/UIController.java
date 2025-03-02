@@ -7,6 +7,7 @@ package com.chat.controller;
 import com.chat.events.ConnectionListener;
 import com.chat.events.MessageListener;
 import com.chat.model.Message;
+import com.chat.model.Message.MessageType;
 import com.chat.model.User;
 import com.chat.ui.gui.AddContact;
 import com.chat.ui.gui.Chat;
@@ -144,10 +145,14 @@ public class UIController implements ConnectionListener, MessageListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 //manageMessageSent();
-                System.out.println("Mensaje enviado");
             }
             
         });
+    }
+    
+    public void displayContacts(List<User> contacts) {
+        chatWindow.setContactsList(contacts);
+        chatWindow.displayMessage(new Message("HOLA", MessageType.TEXT));
     }
     
     /** Inicializa los listeners de la ventana de Añadir Contactos **/
@@ -259,7 +264,16 @@ public class UIController implements ConnectionListener, MessageListener {
     public void setContactsList(List<User> contacts){
         chatWindow.setContactsList(contacts);
     }
-
+    
+    /** Crea un nuevo panel de Contacto **/
+    public void createContactPanel(User contact, String peerId) {
+        chatWindow.createPanelContact(contact, peerId);
+    }
+    
+    /** Actualiza un Panel de Contacto **/
+    public void updateContactPanel(String userId, String peerId, boolean connected) {
+        chatWindow.updateContactPanel(userId, peerId, connected);
+    }
 
     /** MÉTODOS PARA NOTIFICAR AL USUARIO **/
     

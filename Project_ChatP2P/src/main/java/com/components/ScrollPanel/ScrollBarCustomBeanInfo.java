@@ -1,4 +1,4 @@
-package com.components.ScrollPanel;
+package com.components.scrollPanel;
 
 import java.beans.BeanDescriptor;
 import java.beans.IntrospectionException;

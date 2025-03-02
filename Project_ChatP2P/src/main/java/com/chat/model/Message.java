@@ -9,10 +9,12 @@ public class Message implements Serializable {
 
     // Enum para el tipo de Mensaje
     public enum MessageType {
-        TEXT,       // Mensaje de texto normal
-        FILE,       // Envío de archivo
-        SYSTEM,     // Mensaje de sistema
-        USER_INFO   // Información de usuario
+        TEXT,             // Mensaje de texto normal
+        FILE,             // Envío de archivo
+        SYSTEM,           // Mensaje de sistema
+        USER_INFO,        // Información de usuario
+        CONNECTION,       // Conexión a/de contacto
+        DISCONNECTION,    // Desconexión de/de parte de contacto
     }
 
     /** Propiedades básicas **/
@@ -64,6 +66,32 @@ public class Message implements Serializable {
     public static Message createUserInfoMessage(User user) {
         Message message = new Message();
         message.setType(MessageType.USER_INFO);
+        message.setUserData(user);
+        
+        return message;
+    }
+    
+    /**
+     * Método para crear un mensaje de aviso de que se ha establecido conexión con un contacto
+     * @param user Usuario actual
+     * @return Mensaje a enviar
+     */
+    public static Message createConnectionMessage(User user) {
+        Message message = new Message();
+        message.setType(MessageType.CONNECTION);
+        message.setUserData(user);
+        
+        return message;
+    }
+    
+    /**
+     * Método para crear un mensaje de aviso de que se va a realizar una desconexión con un contacto
+     * @param user Usuario actual
+     * @return Mensaje a enviar
+     */
+    public static Message createDisconnectionMessage(User user) {
+        Message message = new Message();
+        message.setType(MessageType.DISCONNECTION);
         message.setUserData(user);
         
         return message;

@@ -1,19 +1,18 @@
 package com.chat.ui.gui;
 
 import com.chat.model.Message;
+import com.chat.model.Message.MessageType;
 import com.chat.model.User;
+import com.components.contactPanel.ContactPanel;
 
 import java.awt.*;
+import java.io.File;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
+
 import java.util.List;
-import javax.imageio.ImageIO;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.*;
 
 
@@ -25,30 +24,34 @@ public class Chat extends javax.swing.JFrame {
 
     /** Propiedades **/
     int xMouse, yMouse;
-    List<User> contacts;         // Lista de contactos
+    
+    List<User> contacts;                            // Lista de contactos
+    Map<String, ContactPanel> contactsPanels;        // Lista de contactos
 
     /**
      * Constructor
      */
     public Chat() {
-        contacts = new ArrayList<>();
-
+        contacts = new CopyOnWriteArrayList<>();
+        contactsPanels = new ConcurrentHashMap<>();
+        
         initComponents();
         setLocationRelativeTo(null);
     }
 
     /** Métodos adicionales **/
     public void setContactsList(List<User> contacts){
-        this.contacts = contacts;
-        
-        displayContacts();
-    }
+        SwingUtilities.invokeLater(() -> {
+            this.contacts = contacts;
 
-    private void displayContacts() { }
+            displayContacts();
+        });
+    }
 
     /**
      * Botones
      */
+    
     public JLabel getBtnExit(){
         return TxtExit;
     }
@@ -61,17 +64,109 @@ public class Chat extends javax.swing.JFrame {
         return TxtEnviar;
     }
     
+    public JLabel getBtnSelectFile() {
+        return TxtFile;
+    }
+    
     public JButton getBtnAddContact() {
         return btnAddContact;
     }
     
     /** Datos de Mensaje **/
+    
     public Message getMessage() {
         String content = MessageTxt.getText().trim();
         
-        return new Message(content, Message.MessageType.TEXT);
+        return new Message(content, MessageType.TEXT);
     }
     
+    /** Actualizar interfaz **/
+    
+    public void displayMessage(Message message) {
+        switch(message.getType()) {
+            case MessageType.TEXT:
+                displayTextMessage(message.getContent());
+                break;
+            case MessageType.SYSTEM:
+                displaySystemMessage(message.getContent());
+                break;
+            case MessageType.FILE:
+                displayFileMessage(message.getAttachedFile());
+                break;
+            default:
+        }
+    }
+    
+    private void displayTextMessage(String message) {
+        String content = TxtChatArea.getText();
+        TxtChatArea.setText(content + System.lineSeparator() + message);
+    }
+    
+    private void displaySystemMessage(String message) {
+        String content = TxtChatArea.getText();
+        TxtChatArea.setText(content + System.lineSeparator() + "SERVER: " + message);
+    }
+    
+    private void displayFileMessage(File file) {
+        
+    }
+            
+    private void displayContacts() {
+        pnlContacts.removeAll();
+
+        for (User contact : contacts) {
+            ContactPanel panel = new ContactPanel(contact);
+            pnlContacts.add(panel);
+            
+            contactsPanels.put(contact.getUserId(), panel);
+        }
+        
+        pnlContacts.add(Box.createVerticalGlue());
+
+        pnlContacts.revalidate();
+        pnlContacts.repaint();
+    }
+    
+    public void displayChat(List<Message> messages){
+        for (Message message : messages) {
+            switch(message.getType()) {
+            
+            }
+        }
+    }
+    
+    public void createPanelContact(User contact, String peerId) {
+        ContactPanel panel = new ContactPanel(contact);
+        panel.setConnected(peerId);
+        contactsPanels.put(contact.getUserId(), panel);
+
+        removeGlue();
+
+        pnlContacts.add(panel);
+        pnlContacts.add(Box.createVerticalGlue());
+
+        pnlContacts.revalidate();
+        pnlContacts.repaint();
+    }
+    
+    public void updateContactPanel(String contactId, String peerId, boolean connected) {
+        ContactPanel contactPanel = contactsPanels.get(contactId);
+        
+        if (connected)
+            contactPanel.setConnected(peerId);
+        else
+            contactPanel.setDisconnected();
+    }
+    
+    private void removeGlue() {
+        Component[] components = pnlContacts.getComponents();
+        for (Component comp : components) {
+            if (comp instanceof Box.Filler) {
+                pnlContacts.remove(comp);
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -86,13 +181,18 @@ public class Chat extends javax.swing.JFrame {
         TxtExit = new javax.swing.JLabel();
         usernameLbl = new javax.swing.JLabel();
         Logo = new javax.swing.JLabel();
+        BtnFile = new javax.swing.JPanel();
+        TxtFile = new javax.swing.JLabel();
         BtnEnviar = new javax.swing.JPanel();
         TxtEnviar = new javax.swing.JLabel();
         MessageTxt = new javax.swing.JTextField();
-        MenssageSeparator = new javax.swing.JSeparator();
-        jScrollPaneContact = new javax.swing.JScrollPane();
-        jPanelContact = new javax.swing.JPanel();
+        MessageSeparator = new javax.swing.JSeparator();
+        jScrollPaneContacts = new javax.swing.JScrollPane();
+        pnlContacts = new javax.swing.JPanel();
         btnAddContact = new javax.swing.JButton();
+        btnProfile = new javax.swing.JButton();
+        jScrollPaneChatArea = new javax.swing.JScrollPane();
+        TxtChatArea = new javax.swing.JTextArea();
 
         jScrollPane1.setViewportView(jEditorPane1);
 
@@ -228,6 +328,41 @@ public class Chat extends javax.swing.JFrame {
         Logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/LOGO.png"))); // NOI18N
         bg.add(Logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 30, -1, -1));
 
+        BtnFile.setBackground(new java.awt.Color(7, 134, 184));
+        BtnFile.setOpaque(false);
+
+        TxtFile.setFont(new java.awt.Font("Roboto Condensed", 1, 18)); // NOI18N
+        TxtFile.setForeground(new java.awt.Color(255, 255, 255));
+        TxtFile.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        TxtFile.setText("📁");
+        TxtFile.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        TxtFile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TxtFileMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                TxtFileMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                TxtFileMouseExited(evt);
+            }
+        });
+
+        javax.swing.GroupLayout BtnFileLayout = new javax.swing.GroupLayout(BtnFile);
+        BtnFile.setLayout(BtnFileLayout);
+        BtnFileLayout.setHorizontalGroup(
+            BtnFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnFileLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(TxtFile, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        BtnFileLayout.setVerticalGroup(
+            BtnFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(TxtFile, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+        );
+
+        bg.add(BtnFile, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 440, 30, 50));
+
         BtnEnviar.setBackground(new java.awt.Color(7, 134, 184));
 
         TxtEnviar.setFont(new java.awt.Font("Roboto Condensed", 1, 18)); // NOI18N
@@ -251,16 +386,14 @@ public class Chat extends javax.swing.JFrame {
         BtnEnviar.setLayout(BtnEnviarLayout);
         BtnEnviarLayout.setHorizontalGroup(
             BtnEnviarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(TxtEnviar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+            .addComponent(TxtEnviar, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
         );
         BtnEnviarLayout.setVerticalGroup(
             BtnEnviarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnEnviarLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(TxtEnviar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(TxtEnviar, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
         );
 
-        bg.add(BtnEnviar, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 440, 110, 40));
+        bg.add(BtnEnviar, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 440, 110, 50));
 
         MessageTxt.setBackground(new java.awt.Color(153, 204, 255));
         MessageTxt.setForeground(new java.awt.Color(153, 153, 153));
@@ -276,39 +409,36 @@ public class Chat extends javax.swing.JFrame {
                 MessageTxtActionPerformed(evt);
             }
         });
-        bg.add(MessageTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 440, 400, 40));
-        bg.add(MenssageSeparator, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 480, 390, -1));
+        bg.add(MessageTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 440, 410, 40));
+        bg.add(MessageSeparator, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 480, 410, -1));
 
-        jPanelContact.setBackground(new java.awt.Color(255, 255, 255));
-        jPanelContact.setToolTipText("");
-        jPanelContact.setAlignmentX(0.0F);
-        jPanelContact.setAlignmentY(0.0F);
+        jScrollPaneContacts.setMinimumSize(new java.awt.Dimension(200, 400));
+        jScrollPaneContacts.setPreferredSize(new java.awt.Dimension(200, 400));
 
-        btnAddContact.setText("Añadir contacto");
-        btnAddContact.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddContactActionPerformed(evt);
-            }
-        });
+        pnlContacts.setBackground(new java.awt.Color(255, 255, 255));
+        pnlContacts.setToolTipText("");
+        pnlContacts.setAlignmentX(0.0F);
+        pnlContacts.setAlignmentY(0.0F);
+        pnlContacts.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
+        jScrollPaneContacts.setViewportView(pnlContacts);
 
-        javax.swing.GroupLayout jPanelContactLayout = new javax.swing.GroupLayout(jPanelContact);
-        jPanelContact.setLayout(jPanelContactLayout);
-        jPanelContactLayout.setHorizontalGroup(
-            jPanelContactLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelContactLayout.createSequentialGroup()
-                .addComponent(btnAddContact, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 22, Short.MAX_VALUE))
-        );
-        jPanelContactLayout.setVerticalGroup(
-            jPanelContactLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelContactLayout.createSequentialGroup()
-                .addComponent(btnAddContact)
-                .addGap(0, 908, Short.MAX_VALUE))
-        );
+        bg.add(jScrollPaneContacts, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 0, 220, 500));
 
-        jScrollPaneContact.setViewportView(jPanelContact);
+        btnAddContact.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        btnAddContact.setText("+");
+        bg.add(btnAddContact, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 100, 60, 40));
 
-        bg.add(jScrollPaneContact, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 0, 220, 500));
+        btnProfile.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        btnProfile.setText("...");
+        bg.add(btnProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 150, 60, 40));
+
+        TxtChatArea.setEditable(false);
+        TxtChatArea.setColumns(20);
+        TxtChatArea.setRows(5);
+        TxtChatArea.setEnabled(false);
+        jScrollPaneChatArea.setViewportView(TxtChatArea);
+
+        bg.add(jScrollPaneChatArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, 530, 360));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -395,9 +525,17 @@ public class Chat extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_MessageTxtActionPerformed
 
-    private void btnAddContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddContactActionPerformed
-        
-    }//GEN-LAST:event_btnAddContactActionPerformed
+    private void TxtFileMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtFileMouseExited
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TxtFileMouseExited
+
+    private void TxtFileMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtFileMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TxtFileMouseEntered
+
+    private void TxtFileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtFileMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TxtFileMouseClicked
 
     /**
      * @param args the command line arguments
@@ -452,20 +590,25 @@ public class Chat extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel BtnEnviar;
     private javax.swing.JPanel BtnExit;
+    private javax.swing.JPanel BtnFile;
     private javax.swing.JLabel Logo;
-    private javax.swing.JSeparator MenssageSeparator;
+    private javax.swing.JSeparator MessageSeparator;
     private javax.swing.JTextField MessageTxt;
     private javax.swing.JPanel Minimizarbtn;
+    private javax.swing.JTextArea TxtChatArea;
     private javax.swing.JLabel TxtEnviar;
     private javax.swing.JLabel TxtExit;
+    private javax.swing.JLabel TxtFile;
     private javax.swing.JLabel TxtMinimizar;
     private javax.swing.JPanel bg;
     private javax.swing.JButton btnAddContact;
+    private javax.swing.JButton btnProfile;
     private javax.swing.JPanel header;
     private javax.swing.JEditorPane jEditorPane1;
-    private javax.swing.JPanel jPanelContact;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPaneContact;
+    private javax.swing.JScrollPane jScrollPaneChatArea;
+    private javax.swing.JScrollPane jScrollPaneContacts;
+    private javax.swing.JPanel pnlContacts;
     private javax.swing.JLabel usernameLbl;
     // End of variables declaration//GEN-END:variables
 }

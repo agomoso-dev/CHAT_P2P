@@ -48,11 +48,9 @@ public class ClientHandler implements Runnable {
      */
     private void handleDisconnection() {
         String peerId = peerConnection.getPeerId();
-
         peerConnection.close();
-        ChatManager.getInstance().handleDisconnection(peerId);
 
-        System.out.println("Cliente desconectado: " + peerId);
+        ChatManager.getInstance().handleUnexpectedDisconnection(peerConnection.getPeerId());
     }
 
     /**

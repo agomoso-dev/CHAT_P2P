@@ -31,6 +31,7 @@ public class Login extends javax.swing.JFrame {
     /**
      * Botones
      */
+    
     public JLabel getBtnLogin() {
         return TxtLogin;
     }
@@ -46,6 +47,7 @@ public class Login extends javax.swing.JFrame {
     /**
      * Datos de Login *
      */
+    
     public String getUsername() {
         return (User.getText() != null) ? User.getText().trim() : "";
     }
@@ -100,8 +102,8 @@ public class Login extends javax.swing.JFrame {
         bg.add(User, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 260, 420, 40));
         bg.add(UserSeparator, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 300, 420, -1));
 
-        Logo.setFont(new java.awt.Font("Roboto Black", 0, 48)); // NOI18N
-        Logo.setForeground(new java.awt.Color(102, 153, 255));
+        Logo.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 48)); // NOI18N
+        Logo.setForeground(new java.awt.Color(51, 102, 255));
         Logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/LOGO.png"))); // NOI18N
         Logo.setText("WHATSABLUE");
         bg.add(Logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, -1, -1));
@@ -208,7 +210,7 @@ public class Login extends javax.swing.JFrame {
 
         bg.add(header, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 500, 40));
 
-        TxtSessionStart.setFont(new java.awt.Font("Roboto Black", 0, 24)); // NOI18N
+        TxtSessionStart.setFont(new java.awt.Font("Roboto Black", 1, 24)); // NOI18N
         TxtSessionStart.setText("INICIAR SESIÓN");
         bg.add(TxtSessionStart, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 170, -1, -1));
 

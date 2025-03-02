@@ -35,6 +35,7 @@ public class AddContact extends javax.swing.JFrame {
     /**
      * Botones
      */
+    
     public JLabel getBtnExit() {
         return TxtExit;
     }
@@ -47,7 +48,10 @@ public class AddContact extends javax.swing.JFrame {
         return TxtAddContact;
     }
     
-    /** Datos del Contacto **/
+    /**
+     * Datos de contacto
+     */
+    
     public String getIp() {
         return (IP.getText() != null) ? IP.getText().trim() : "";
     }
@@ -80,7 +84,7 @@ public class AddContact extends javax.swing.JFrame {
         BtnAddContct = new javax.swing.JPanel();
         TxtAddContact = new javax.swing.JLabel();
         Fondo_Derecha = new javax.swing.JPanel();
-        avatar1 = new com.components.Avatar.Avatar();
+        avatar1 = new com.components.avatar.Avatar();
         header = new javax.swing.JPanel();
         Exitbtn = new javax.swing.JPanel();
         TxtExit = new javax.swing.JLabel();
@@ -158,8 +162,8 @@ public class AddContact extends javax.swing.JFrame {
         bg.add(Port, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 300, 420, 40));
         bg.add(PortSeparator, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 340, 420, -1));
 
-        Logo.setFont(new java.awt.Font("Roboto Black", 0, 48)); // NOI18N
-        Logo.setForeground(new java.awt.Color(102, 153, 255));
+        Logo.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 48)); // NOI18N
+        Logo.setForeground(new java.awt.Color(51, 102, 255));
         Logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/LOGO.png"))); // NOI18N
         Logo.setText("WHATSABLUE");
         bg.add(Logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 40, -1, -1));
@@ -553,7 +557,7 @@ public class AddContact extends javax.swing.JFrame {
     private javax.swing.JLabel TxtMinimize;
     private javax.swing.JLabel TxtPort;
     private javax.swing.JLabel TxtTitle;
-    private com.components.Avatar.Avatar avatar1;
+    private com.components.avatar.Avatar avatar1;
     private javax.swing.JPanel bg;
     private javax.swing.JPanel header;
     private javax.swing.JEditorPane jEditorPane1;

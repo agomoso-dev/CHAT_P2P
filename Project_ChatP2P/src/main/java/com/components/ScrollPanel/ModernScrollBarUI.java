@@ -1,4 +1,4 @@
-package com.components.ScrollPanel;
+package com.components.scrollPanel;
 
 import java.awt.Color;
 import java.awt.Dimension;

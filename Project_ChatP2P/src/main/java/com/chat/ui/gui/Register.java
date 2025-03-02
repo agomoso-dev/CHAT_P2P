@@ -40,6 +40,7 @@ public class Register extends javax.swing.JFrame {
     /**
      * Botones *
      */
+    
     public JLabel getBtnGoLogin() {
         return TxtGoLogin;
     }
@@ -55,6 +56,7 @@ public class Register extends javax.swing.JFrame {
     /**
      * Datos de Registro *
      */
+    
     public Map<String, Object> getData(){
         Map<String, Object> data = new HashMap();
         data.put("username", getUsername());
@@ -101,7 +103,7 @@ public class Register extends javax.swing.JFrame {
         Port = new javax.swing.JTextField();
         UserSeparator1 = new javax.swing.JSeparator();
         TxtUser = new javax.swing.JLabel();
-        avatar1 = new com.components.Avatar.Avatar();
+        avatar1 = new com.components.avatar.Avatar();
         BtnMas = new javax.swing.JPanel();
         TxtMas = new javax.swing.JLabel();
 
@@ -220,8 +222,8 @@ public class Register extends javax.swing.JFrame {
 
         bg.add(BtnGoLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 40, 40));
 
-        Logo.setFont(new java.awt.Font("Roboto Black", 0, 48)); // NOI18N
-        Logo.setForeground(new java.awt.Color(102, 153, 255));
+        Logo.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 48)); // NOI18N
+        Logo.setForeground(new java.awt.Color(51, 102, 255));
         Logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/LOGO.png"))); // NOI18N
         Logo.setText("REGISTRAR");
         bg.add(Logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 40, -1, -1));
@@ -305,11 +307,11 @@ public class Register extends javax.swing.JFrame {
         bg.add(TxtUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 130, -1, 30));
 
         avatar1.setCornerRadius(200);
-        bg.add(avatar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 110, 125, 125));
+        bg.add(avatar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 110, 125, 125));
 
         BtnMas.setBackground(new java.awt.Color(7, 134, 184));
 
-        TxtMas.setFont(new java.awt.Font("Roboto Condensed", 1, 18)); // NOI18N
+        TxtMas.setFont(new java.awt.Font("Roboto Condensed", 1, 24)); // NOI18N
         TxtMas.setForeground(new java.awt.Color(255, 255, 255));
         TxtMas.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         TxtMas.setText("+");
@@ -330,16 +332,14 @@ public class Register extends javax.swing.JFrame {
         BtnMas.setLayout(BtnMasLayout);
         BtnMasLayout.setHorizontalGroup(
             BtnMasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(TxtMas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+            .addComponent(TxtMas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
         );
         BtnMasLayout.setVerticalGroup(
             BtnMasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BtnMasLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(TxtMas, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(TxtMas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
         );
 
-        bg.add(BtnMas, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 230, 40, 40));
+        bg.add(BtnMas, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 250, 50, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -553,7 +553,7 @@ public class Register extends javax.swing.JFrame {
     private javax.swing.JTextField User;
     private javax.swing.JSeparator UserSeparator;
     private javax.swing.JSeparator UserSeparator1;
-    private com.components.Avatar.Avatar avatar1;
+    private com.components.avatar.Avatar avatar1;
     private javax.swing.JPanel bg;
     private javax.swing.JPanel header;
     private javax.swing.JEditorPane jEditorPane1;
