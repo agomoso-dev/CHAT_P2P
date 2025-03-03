@@ -1,8 +1,5 @@
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\controller\ChatManager.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\controller\UIController.java
-C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\events\ConnectionListener.java
-C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\events\EventManager.java
-C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\events\MessageListener.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\model\Avatar.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\model\ChatSession.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\model\Message.java
@@ -17,11 +14,9 @@ C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\network\socket\ClientHandler.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\network\socket\PeerConnection.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\Project_ChatP2P.java
-C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\storage\FirebaseManager.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\ui\gui\AddContact.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\ui\gui\Chat.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\ui\gui\Login.java
-C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\ui\gui\Profile.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\ui\gui\Register.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\chat\utils\Constants.java
 C:\Users\jairo\Documents\REPOSITORIOS\pruebas\Project_ChatP2P\src\main\java\com\components\avatar\Avatar.java

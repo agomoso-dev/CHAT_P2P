@@ -10,6 +10,8 @@ import com.chat.network.api.UserClient;
 import com.chat.network.socket.ChatClient;
 import com.chat.network.socket.ChatServer;
 import com.chat.network.socket.PeerConnection;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -19,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 
 public class ChatManager {
 
@@ -229,11 +232,6 @@ public class ChatManager {
             String contactId = ip + ":" + port;
             
             registerNewConnection(contactId, chatClient);
-            System.out.println("SIZE");
-            System.out.println(connections.size());
-            System.out.println(chatClients.size());
-            System.out.println(contacts.size());
-            System.out.println(chatSessions.size());
             
             uiController.showMessage("Conectado exitosamente a " + contactId);
             
@@ -325,11 +323,10 @@ public class ChatManager {
                 handleDisconnectionMessageReceived(peerId, message);
                 break;
             case TEXT:
-                System.out.println("Mensaje de texto recibido");
                 handleTextMessageReceived(peerId, message);
                 break;
             case FILE:
-                //handleFileMessage(peerId, message);
+                handleFileMessageReceived(peerId, message);
                 break;
             case SYSTEM:
                 uiController.showMessage("Mensaje del sistema: " + message.getContent());
@@ -441,6 +438,7 @@ public class ChatManager {
         if (actualPeer != null && actualPeer.getPeerId().equals(peerId)){
             actualPeer = null;
             uiController.showMessage(contactUser.getUsername() + " se ha desconectado. No tienes ningun chat seleccionado");
+            uiController.setContactPanelAsSelected(null);
         } else {
             uiController.showMessage(contactUser.getUsername() + " se ha desconectado.");
         }
@@ -466,6 +464,60 @@ public class ChatManager {
     }
     
     /**
+     * Gestiona la recepción de un mensaje de archivo, actualizando la interfaz
+     * 
+     * @param message Mensaje recibido
+     * @param peerId ID del Peer que ha enviuado el mensaje
+     */
+    private void handleFileMessageReceived(String peerId, Message message) {
+        User contact = getContactByPeerId(peerId);
+
+        byte[] fileBytes = message.getFileContent();
+        String fileName = (String) message.getFileData().get("name");
+        if (fileName == null) {
+            fileName = "archivo_desconocido_" + System.currentTimeMillis();
+        }
+
+        File downloadsDir = new File("downloads");
+        if (!downloadsDir.exists()) {
+            downloadsDir.mkdir();
+        }
+
+        File outputFile = new File(downloadsDir, fileName);
+
+        int counter = 1;
+        while (outputFile.exists()) {
+            int lastDot = fileName.lastIndexOf('.');
+            String name = fileName;
+            String extension = "";
+
+            if (lastDot > 0) {
+                name = fileName.substring(0, lastDot);
+                extension = fileName.substring(lastDot);
+            }
+
+            outputFile = new File(downloadsDir, name + "_" + counter + extension);
+            counter++;
+        }
+
+        try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+            outputStream.write(fileBytes);
+        } catch (Exception e) {
+            uiController.showErrorMessage("Error al guardar el archivo: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        ChatSession chatSession = getChatSessionByPeerId(peerId);
+        MessageEntry messageEntry = new MessageEntry(contact, message);
+        chatSession.addMessage(contact, messageEntry);
+
+        PeerConnection peerConnection = connections.get(peerId);
+        if (actualPeer != null && peerConnection.equals(actualPeer)) {
+            uiController.displayFileMessage(messageEntry);
+        }
+    }
+    
+    /**
      * Establece el contacto actual con el que se va a chatear y se actualiza la interfaz con el historial de mensajes.
      * 
      * @param peerId ID del Peer actual
@@ -484,11 +536,11 @@ public class ChatManager {
     }
 
     /**
-     * Gestiona la salida de un mensaje
+     * Gestiona el envío de un mensaje de tipo Texto
      *
      * @param message Mensaje a enviar
      */
-    public void handleMessageSent(Message message) {
+    public void handleTextMessageSent(Message message) {
         if (actualPeer == null) {
             uiController.showErrorMessage("No hay un contacto seleccionado para enviar el mensaje");
             return;
@@ -508,6 +560,42 @@ public class ChatManager {
             uiController.displayTextMessage(new MessageEntry(User.getCurrentUser(), message));
         } catch (IOException ex) {
             Logger.getLogger(ChatManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Gestiona la creación y envío de un mensaje de tipo File
+     */
+    public void handleFileMessageSent() {
+        if (actualPeer == null) {
+            uiController.showErrorMessage("No hay un contacto seleccionado para enviar el mensaje");
+            return;
+        }
+        
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showOpenDialog(null);
+        
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+                        
+            try {
+                Message fileMessage = Message.createFileMessage(selectedFile);
+                
+                actualPeer.sendMessage(fileMessage);
+
+                User contact = getContactByPeerId(actualPeer.getPeerId());
+                if (contact != null) {
+                    ChatSession chatSession = getOrCreateChatSession(contact.getUserId());
+                    MessageEntry messageEntry = new MessageEntry(User.getCurrentUser(), fileMessage);
+
+                    chatSession.addMessage(User.getCurrentUser(), messageEntry);
+                }
+
+                uiController.displayFileMessage(new MessageEntry(User.getCurrentUser(), fileMessage));
+                uiController.showMessage("Archivo enviado: " + selectedFile.getName());
+            } catch (IOException ex) {
+                Logger.getLogger(ChatManager.class.getName()).log(Level.SEVERE, null, ex);
+            } 
         }
     }
     
@@ -659,6 +747,7 @@ public class ChatManager {
         if (actualPeer != null && actualPeer.getPeerId().equals(peerId)){
             actualPeer = null;
             uiController.showMessage(contactUser.getUsername() + " se ha desconectado. No tienes ningun chat seleccionado");
+            uiController.setContactPanelAsSelected(null);
         } else {
             uiController.showMessage(contactUser.getUsername() + " se ha desconectado.");
         }

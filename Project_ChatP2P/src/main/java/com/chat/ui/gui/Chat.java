@@ -44,6 +44,7 @@ public class Chat extends javax.swing.JFrame {
     
     /** Configura los ajustes del TextArea del Chat **/
     private void setTextAreaConfig(){
+        TxtChatArea.setEditable(false);
         TxtChatArea.setFont(new Font("Arial", Font.PLAIN, 16));
         TxtChatArea.setForeground(Color.BLACK);
         TxtChatArea.setDisabledTextColor(Color.BLACK);
@@ -74,6 +75,10 @@ public class Chat extends javax.swing.JFrame {
         return TxtEnviar;
     }
     
+    public JLabel getBtnSendFile() {
+        return TxtFile;
+    }
+    
     public JLabel getBtnSelectFile() {
         return TxtFile;
     }
@@ -91,28 +96,87 @@ public class Chat extends javax.swing.JFrame {
     public Message getMessage() {
         String content = MessageTxt.getText().trim();
         
-        return new Message(content, MessageType.TEXT);
+        return Message.createTextMessage(content);
     }
     
     /** Actualizar interfaz **/
     
     public void displayTextMessage(MessageEntry messageEntry) {
         String content = TxtChatArea.getText();
+        String senderUsername = messageEntry.getSender().getUsername();
+        if (senderUsername.equals(User.getCurrentUser().getUsername())) {
+                    senderUsername = "Yo";
+        }
+        
         String message =
             "\s[" + messageEntry.getTimestamp() + "] " + 
-            messageEntry.getSender().getUsername() + ": " + 
+            senderUsername + ": " + 
             messageEntry.getMessage().getContent() + "\n";
 
         TxtChatArea.setText(content + message);
     }
     
-    private void displaySystemMessage(String message) {
+    public void displaySystemMessage(String message) {
         String content = TxtChatArea.getText();
         TxtChatArea.setText(content + System.lineSeparator() + "SERVER: " + message);
     }
     
-    private void displayFileMessage(File file) {
-        
+    public void displayFileMessage(MessageEntry messageEntry) {
+        Message message = messageEntry.getMessage();
+        User sender = messageEntry.getSender();
+
+        String fileName = (String) message.getFileData().get("name");
+        long fileSize = (long) message.getFileData().get("size");
+
+        String formattedSize = formatFileSize(fileSize);
+
+        String senderUsername = sender.getUsername();
+        boolean isSentByMe = senderUsername.equals(User.getCurrentUser().getUsername());
+
+        String fileInfo;
+
+        if (isSentByMe) {
+            fileInfo = String.format("\s[%s] Yo: He enviado un archivo: %s (%s)", 
+                                    messageEntry.getTimestamp(),
+                                    fileName, 
+                                    formattedSize);
+        } else {
+            File downloadsDir = new File("downloads");
+            File downloadedFile = new File(downloadsDir, fileName);
+
+            fileInfo = String.format("\s[%s] %s: Ha enviado un archivo: %s (%s)\nGuardado en: %s", 
+                                    messageEntry.getTimestamp(),
+                                    senderUsername, 
+                                    fileName, 
+                                    formattedSize,
+                                    downloadedFile.getAbsolutePath());
+        }
+
+        String content = TxtChatArea.getText();
+        TxtChatArea.setText(content + System.lineSeparator() + fileInfo);
+        TxtChatArea.setCaretPosition(TxtChatArea.getDocument().getLength());
+    }
+
+    /**
+     * Formatea un tamaño en bytes a que se pueda leer.
+     * 
+     * @param bytes Tamaño en bytes
+     * @return Tamaño formateado
+     */
+    private String formatFileSize(long bytes) {
+        final long KB = 1024;
+        final long MB = KB * 1024;
+        final long GB = MB * 1024;
+
+        if (bytes < KB) {
+            return bytes + " B";
+        } else if (bytes < MB) {
+            return String.format("%.2f KB", (float) bytes / KB);
+        } else if (bytes < GB) {
+            return String.format("%.2f MB", (float) bytes / MB);
+        } else {
+            return String.format("%.2f GB", (float) bytes / GB);
+        }
     }
             
     private void displayContacts() {
@@ -136,23 +200,21 @@ public class Chat extends javax.swing.JFrame {
         
         if (messageHistory.size() > 0) {
             for (MessageEntry messageEntry : messageHistory) {
-                String content = TxtChatArea.getText();
+                MessageType messageType = messageEntry.getMessage().getType();
                 
-                String timestamp = messageEntry.getTimestamp();
-                String senderUsername = messageEntry.getSender().getUsername();
-                String text = messageEntry.getMessage().getContent();
-                
-                if (senderUsername.equals(User.getCurrentUser().getUsername())) {
-                    senderUsername = "Yo";
+                switch(messageType){
+                    case MessageType.TEXT:
+                        displayTextMessage(messageEntry);
+                        break;
+                    case MessageType.FILE:
+                        displayFileMessage(messageEntry);
+                        break;
+                    default:
+                        return;
                 }
-                String message =
-                        "[" + timestamp + "] " + 
-                        senderUsername + ": " + 
-                        text + "\n";
-
-                TxtChatArea.setText(content + message);
             }
         }
+        
     }
 
     public void createPanelContact(User contact, String peerId) {
@@ -194,7 +256,7 @@ public class Chat extends javax.swing.JFrame {
     public void setContactPanelAsSelected(String contactId) {
         for (Map.Entry<String, ContactPanel> entry : contactsPanels.entrySet()) {
             ContactPanel panel = entry.getValue();
-            if (entry.getKey().equals(contactId)) {
+            if (contactId != null && entry.getKey().equals(contactId)) {
                 panel.setAsSelected(true);
             } else {
                 panel.setAsSelected(false);
@@ -227,7 +289,7 @@ public class Chat extends javax.swing.JFrame {
         btnAddContact = new javax.swing.JButton();
         btnProfile = new javax.swing.JButton();
         jScrollPaneChatArea = new javax.swing.JScrollPane();
-        TxtChatArea = new javax.swing.JTextArea();
+        TxtChatArea = new javax.swing.JEditorPane();
 
         jScrollPane1.setViewportView(jEditorPane1);
 
@@ -467,12 +529,9 @@ public class Chat extends javax.swing.JFrame {
         btnProfile.setText("...");
         bg.add(btnProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 150, 60, 40));
 
-        TxtChatArea.setEditable(false);
-        TxtChatArea.setColumns(20);
-        TxtChatArea.setRows(5);
         jScrollPaneChatArea.setViewportView(TxtChatArea);
 
-        bg.add(jScrollPaneChatArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, 530, 360));
+        bg.add(jScrollPaneChatArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 520, 360));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -629,7 +688,7 @@ public class Chat extends javax.swing.JFrame {
     private javax.swing.JSeparator MessageSeparator;
     private javax.swing.JTextField MessageTxt;
     private javax.swing.JPanel Minimizarbtn;
-    private javax.swing.JTextArea TxtChatArea;
+    private javax.swing.JEditorPane TxtChatArea;
     private javax.swing.JLabel TxtEnviar;
     private javax.swing.JLabel TxtExit;
     private javax.swing.JLabel TxtFile;

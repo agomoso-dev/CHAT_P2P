@@ -1,8 +1,11 @@
-package com.chat.model;
+   package com.chat.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Message implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -18,48 +21,45 @@ public class Message implements Serializable {
     }
 
     /** Propiedades básicas **/
-    private String content;                // Contenido del mensaje
-    private File attachedFile;             // Archivo adjunto al mensaje
-    private MessageType type;              // Tipo de mensaje
-    private LocalDateTime timestamp;       // Momento de creación del mensaje
+    private String content;                    // Contenido del mensaje
+    private MessageType type;                  // Tipo de mensaje
     
     /** Propiedades para USER_INFO **/
-    private User userData;                 // Información completa del usuario
+    private User userData;                     // Información completa del usuario
     
-    /** Propiedades para de archivos **/
-    private byte[] fileContent;            // Contenido binario del archivo
-    private String fileName;               // Nombre del archivo
+    /** Propiedades para FILE **/
+    private byte[] fileContent;                // Contenido binario del archivo
+    private Map<String, Object> fileData;      // Nombre del archivo
     
     /** Constructor vacío **/
-    public Message() {
-        this.timestamp = LocalDateTime.now();
-    }
+    public Message() { fileData = new HashMap<>(); }
 
-    /** Constructor para mensajes de texto o sistema **/
-    public Message(String content, MessageType type) {
-        if (type != MessageType.TEXT && type != MessageType.SYSTEM) {
-            throw new IllegalArgumentException("Tipo de mensaje no válido para este constructor");
-        }
+    /** Método para crear un mensaje de texto **/
+    public static Message createTextMessage(String content){
+        Message message = new Message();
+        message.setType(MessageType.TEXT);
+        message.setContent(content);
         
-        this.content = content;
-        this.type = type;
-        this.timestamp = LocalDateTime.now();
-    }
-
-    /** Constructor para mensajes de archivo **/
-    public Message(File attachedFile) {
-        this.attachedFile = attachedFile;
-        this.type = MessageType.FILE;
-        this.fileName = attachedFile.getName();
-        this.timestamp = LocalDateTime.now();
+        return message;
     }
     
-    /** Constructor para mensajes de archivo con contenido binario **/
-    public Message(String fileName, byte[] fileContent) {
-        this.fileName = fileName;
-        this.fileContent = fileContent;
-        this.type = MessageType.FILE;
-        this.timestamp = LocalDateTime.now();
+    /** Método para crear un mensaje del Sistema **/
+    public static Message createSystemMessage(String content){
+        Message message = new Message();
+        message.setType(MessageType.SYSTEM);
+        message.setContent(content);
+        
+        return message;
+    }
+    
+    /** Método para crear un mensaje de archivo **/
+    public static Message createFileMessage(File file) throws IOException {
+        Message message = new Message();
+        message.setType(MessageType.FILE);
+        message.setFileContent(Files.readAllBytes(file.toPath()));
+        message.setFileData(file);
+
+        return message;
     }
     
     /** Método para crear un mensaje de información de usuario **/
@@ -96,6 +96,18 @@ public class Message implements Serializable {
         
         return message;
     }
+    
+    /** Métodos adicionales **/
+    
+    /**
+     * Establece los datos de un archivo en el mapa de los datos del Archivo
+     * 
+     * @param file Archivo a leer
+     */
+    private void setFileData(File file){
+        fileData.put("name", file.getName());
+        fileData.put("size", file.length());
+    }
 
     /** Getters y Setters **/
     public String getContent() {
@@ -106,31 +118,12 @@ public class Message implements Serializable {
         this.content = content;
     }
 
-    public File getAttachedFile() {
-        return attachedFile;
-    }
-
-    public void setAttachedFile(File attachedFile) {
-        this.attachedFile = attachedFile;
-        if (attachedFile != null) {
-            this.fileName = attachedFile.getName();
-        }
-    }
-
     public MessageType getType() {
         return type;
     }
 
     public void setType(MessageType type) {
         this.type = type;
-    }
-    
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-    
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
     }
     
     public User getUserData() {
@@ -148,29 +141,13 @@ public class Message implements Serializable {
     public void setFileContent(byte[] fileContent) {
         this.fileContent = fileContent;
     }
-    
-    public String getFileName() {
-        return fileName;
+
+    public Map<String, Object> getFileData() {
+        return fileData;
+    }
+
+    public void setFileData(Map<String, Object> fileData) {
+        this.fileData = fileData;
     }
     
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-    
-    @Override
-    public String toString() {
-        switch (type) {
-            case TEXT:
-                return "[" + timestamp + "] " + content;
-            case FILE:
-                return "[" + timestamp + "] Archivo: " + (fileName != null ? fileName : "desconocido");
-            case SYSTEM:
-                return "[" + timestamp + "] Sistema: " + content;
-            case USER_INFO:
-                return "[" + timestamp + "] Info de usuario: " + 
-                       (userData != null ? userData.getUsername() : "desconocido");
-            default:
-                return "Mensaje desconocido";
-        }
-    }
 }

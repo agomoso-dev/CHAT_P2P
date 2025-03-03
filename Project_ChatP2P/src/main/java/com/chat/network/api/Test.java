@@ -110,8 +110,8 @@ public class Test {
                 ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
                 output.flush(); // Importante: Evita que el servidor se quede esperando
                 // Suponiendo que Message es un objeto serializable con un constructor válido
-                Message message = new Message("Hola", Message.MessageType.USER_INFO); // Asegúrate de que Message sea Serializable
-                output.writeObject(message);
+                //Message message = new Message("Hola", Message.MessageType.USER_INFO); // Asegúrate de que Message sea Serializable
+                //output.writeObject(message);
                 output.flush();
 
                 System.out.println("Mensaje enviado al servidor.");
