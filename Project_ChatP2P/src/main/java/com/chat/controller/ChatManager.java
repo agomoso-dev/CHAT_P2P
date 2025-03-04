@@ -28,8 +28,10 @@ public class ChatManager {
     /** Propiedades **/
     private static ChatManager instance;                    // Singleton
     
-    private UIController uiController;                      // UI Manager
+   // private UIController uiController;                      // UI Manager
     
+   // private ConsoleController consoleController;            // Console Manager
+    private ViewManager viewManager; 
     private Map<String, PeerConnection> connections;        // Conexiones de Peers activas
     private Map<String, ChatClient> chatClients;            // Conexiones a Peers activas
     private Map<String, User> contacts;                     // Lista de contactos
@@ -67,10 +69,35 @@ public class ChatManager {
         this.contactIdToPeerIdMap = new ConcurrentHashMap<>();
         
         this.chatSessions = new ConcurrentHashMap<>();
-        
-        this.uiController = new UIController();
+        if(OSIdenfifier().equals("windows")){
+            this.viewManager = new UIController();
+        }else if(OSIdenfifier().equals("linux")){
+            this.viewManager = new ConsoleController();
+        } else{
+            throw new UnsupportedOperationException("Sistema operativo no soportado: " + OSIdenfifier());
+        }
     }
-    
+    /**
+     * Identifica el sistema operativo actual del usuario
+     * 
+     * @return String con el nombre del sistema operativo ("window", "linux", "unix", "macOS")
+     */
+    public String OSIdenfifier(){
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("win")) {
+            os = "windows";
+        } else if (os.contains("nux")) {
+            os = "linux";
+        }else if (os.contains("nix")){
+            os = "unix";
+        }else if (os.contains("mac")){
+            os = "macOS";
+        } else {
+            System.out.println("Sistema operativo desconocido");
+        }
+        return os;
+    }
     /**
      * Gestiona el flujo de logearse en la app
      * @param userId ID del usuario que se logea
@@ -84,7 +111,7 @@ public class ChatManager {
 
             @Override
             public void onError(String errorMessage) {
-                uiController.showErrorMessage("No se ha encontrado ningún usuario con el siguiente ID: " + userId);
+                viewManager.showErrorMessage("No se ha encontrado ningún usuario con el siguiente ID: " + userId);
             }
             
         });
@@ -115,7 +142,7 @@ public class ChatManager {
                 @Override
                 public void onSuccess(User existingUser) {
                     if (existingUser != null) {
-                        uiController.showErrorMessage("Ya existe un usuario con el mismo puerto. Elige otro puerto.");
+                        viewManager.showErrorMessage("Ya existe un usuario con el mismo puerto. Elige otro puerto.");
                     } else {
                         registerNewUser(user);
                     }
@@ -127,7 +154,7 @@ public class ChatManager {
                 }
             });
         } catch (IOException e) {
-            uiController.showErrorMessage("Error al crear avatar: " + e.getMessage());
+            viewManager.showErrorMessage("Error al crear avatar: " + e.getMessage());
         }
     }
     
@@ -143,11 +170,11 @@ public class ChatManager {
         String contactId = ip + ":" + port;
         
         if (isContact(contactId)) {
-            uiController.showMessage(contactId + " ya está agregado como contacto");
+            viewManager.showMessage(contactId + " ya está agregado como contacto");
             return;
         }
         
-        uiController.showMessage("Conectando con " + contactId + "...");
+        viewManager.showMessage("Conectando con " + contactId + "...");
         
         new Thread(() -> {
             connectToPeer(ip, port);
@@ -162,13 +189,13 @@ public class ChatManager {
         UserClient.getInstance().addUser(user, new UserClient.UserCallback<User>() {
             @Override
             public void onSuccess(User result) {
-                uiController.showMessage("Has sido registrado con éxito. Tu ID de acceso es: " + user.getUserId());
+                viewManager.showMessage("Has sido registrado con éxito. Tu ID de acceso es: " + user.getUserId());
                 loadData(result);
             }
 
             @Override
             public void onError(String errorMessage) {
-                uiController.showErrorMessage("Error en el registro: " + errorMessage);
+                viewManager.showErrorMessage("Error en el registro: " + errorMessage);
             }
         });
     }
@@ -181,7 +208,7 @@ public class ChatManager {
     public void handleConnectionFromPeer(String peerId, PeerConnection peerConnection) {
         connections.put(peerId, peerConnection);
         
-        uiController.showMessage("Conexión externa desde " + peerId);
+        viewManager.showMessage("Conexión externa desde " + peerId);
         
         try {
             User currentUser = User.getCurrentUser();
@@ -209,7 +236,7 @@ public class ChatManager {
                 String existingPeerId = contactIdToPeerIdMap.get(contactId);
                 if (existingPeerId == null) {
                     System.out.println("Actualizando Panel");
-                    uiController.updateContactPanel(contactId, contactId, true);
+                    viewManager.updateContactPanel(contactId, contactId, true);
                 } else {
                     System.out.println("No actualizando");
                 }
@@ -233,14 +260,14 @@ public class ChatManager {
             
             registerNewConnection(contactId, chatClient);
             
-            uiController.showMessage("Conectado exitosamente a " + contactId);
+            viewManager.showMessage("Conectado exitosamente a " + contactId);
             
             sendInfoUserMessage(chatClient.getPeerConnection());
             
             return true;
        } catch(IOException e) {
-           uiController.showErrorMessage("No se ha podido realizar la conexión");
-           return false;
+            viewManager.showErrorMessage("No se ha podido realizar la conexión");
+            return false;
        }
     }
 
@@ -297,11 +324,11 @@ public class ChatManager {
                 contactIdToPeerIdMap.remove(contactId);
                 chatSessions.remove(User.getCurrentUser().getUserId() + ":" + contactId);
                 
-                uiController.showMessage("Desconexión realizada");
-                uiController.updateContactPanel(contactId, actualPeerId, false);
+                viewManager.showMessage("Desconexión realizada");
+                viewManager.updateContactPanel(contactId, actualPeerId, false);
             }
         } catch (Exception ex) {
-            uiController.showErrorMessage("Error al realizar la desconexión con " + contactId);
+            viewManager.showErrorMessage("Error al realizar la desconexión con " + contactId);
         }
     }
     
@@ -329,7 +356,7 @@ public class ChatManager {
                 handleFileMessageReceived(peerId, message);
                 break;
             case SYSTEM:
-                uiController.showMessage("Mensaje del sistema: " + message.getContent());
+                viewManager.showMessage("Mensaje del sistema: " + message.getContent());
                 break;
         }
     }
@@ -351,7 +378,7 @@ public class ChatManager {
         chatSessions.put(currentUserId + ":" + contactId, getOrCreateChatSession(contactId));
 
         if (isContact(contactId)){
-            uiController.updateContactPanel(contactId, peerId, true);
+            viewManager.updateContactPanel(contactId, peerId, true);
             return;
         }
 
@@ -373,18 +400,18 @@ public class ChatManager {
                                 
                                 conn.sendMessage(userInfoMessage);
                             } catch (IOException e) {
-                                uiController.showErrorMessage("Error al enviar información de usuario: " + e.getMessage());
+                                viewManager.showErrorMessage("Error al enviar información de usuario: " + e.getMessage());
                             }
                         }
                     }
                     
-                    uiController.createContactPanel(result, peerId);
-                    uiController.showMessage("Contacto añadido: " + result.getUsername());
+                    viewManager.createContactPanel(result, peerId);
+                    viewManager.showMessage("Contacto añadido: " + result.getUsername());
                 }
 
                 @Override
                 public void onError(String errorMessage) {
-                    uiController.showErrorMessage("Error al añadir contacto: " + errorMessage);
+                    viewManager.showErrorMessage("Error al añadir contacto: " + errorMessage);
                 }
             }
         );
@@ -399,8 +426,8 @@ public class ChatManager {
     private void handleConnectionMessageReceived(String peerId, Message message) {
         User contactUser = message.getUserData();
         
-        uiController.updateContactPanel(contactUser.getUserId(), peerId, true);
-        uiController.showMessage(contactUser.getUsername() + " se acaba de conectar. Conexión establecida");
+        viewManager.updateContactPanel(contactUser.getUserId(), peerId, true);
+        viewManager.showMessage(contactUser.getUsername() + " se acaba de conectar. Conexión establecida");
     }
     
     /**
@@ -434,13 +461,13 @@ public class ChatManager {
         contactIdToPeerIdMap.remove(contactId);
         chatSessions.remove(User.getCurrentUser().getUserId() + ":" + contactId);
         
-        uiController.updateContactPanel(contactId, peerId, false);
+        viewManager.updateContactPanel(contactId, peerId, false);
         if (actualPeer != null && actualPeer.getPeerId().equals(peerId)){
             actualPeer = null;
-            uiController.showMessage(contactUser.getUsername() + " se ha desconectado. No tienes ningun chat seleccionado");
-            uiController.setContactPanelAsSelected(null);
+            viewManager.showMessage(contactUser.getUsername() + " se ha desconectado. No tienes ningun chat seleccionado");
+            viewManager.setContactPanelAsSelected(null);
         } else {
-            uiController.showMessage(contactUser.getUsername() + " se ha desconectado.");
+            viewManager.showMessage(contactUser.getUsername() + " se ha desconectado.");
         }
     }
     
@@ -459,7 +486,7 @@ public class ChatManager {
         
         PeerConnection peerConnection = connections.get(peerId);
         if (actualPeer != null && peerConnection.equals(actualPeer)) {
-            uiController.displayTextMessage(messageEntry);
+            viewManager.displayTextMessage(messageEntry);
         }
     }
     
@@ -503,7 +530,7 @@ public class ChatManager {
         try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
             outputStream.write(fileBytes);
         } catch (Exception e) {
-            uiController.showErrorMessage("Error al guardar el archivo: " + e.getMessage());
+            viewManager.showErrorMessage("Error al guardar el archivo: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -513,7 +540,7 @@ public class ChatManager {
 
         PeerConnection peerConnection = connections.get(peerId);
         if (actualPeer != null && peerConnection.equals(actualPeer)) {
-            uiController.displayFileMessage(messageEntry);
+            viewManager.displayFileMessage(messageEntry);
         }
     }
     
@@ -531,8 +558,8 @@ public class ChatManager {
         ChatSession chatSession = chatSessions.get(sessionId);
         List<MessageEntry> messageHistory = chatSession.getMessageHistory();
         
-        uiController.setContactPanelAsSelected(contactId);
-        uiController.displayChat(messageHistory);
+        viewManager.setContactPanelAsSelected(contactId);
+        viewManager.displayChat(messageHistory);
     }
 
     /**
@@ -542,7 +569,7 @@ public class ChatManager {
      */
     public void handleTextMessageSent(Message message) {
         if (actualPeer == null) {
-            uiController.showErrorMessage("No hay un contacto seleccionado para enviar el mensaje");
+            viewManager.showErrorMessage("No hay un contacto seleccionado para enviar el mensaje");
             return;
         }
 
@@ -557,7 +584,7 @@ public class ChatManager {
                 chatSession.addMessage(User.getCurrentUser(), messageEntry);
             }
 
-            uiController.displayTextMessage(new MessageEntry(User.getCurrentUser(), message));
+            viewManager.displayTextMessage(new MessageEntry(User.getCurrentUser(), message));
         } catch (IOException ex) {
             Logger.getLogger(ChatManager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -568,7 +595,7 @@ public class ChatManager {
      */
     public void handleFileMessageSent() {
         if (actualPeer == null) {
-            uiController.showErrorMessage("No hay un contacto seleccionado para enviar el mensaje");
+            viewManager.showErrorMessage("No hay un contacto seleccionado para enviar el mensaje");
             return;
         }
         
@@ -591,8 +618,8 @@ public class ChatManager {
                     chatSession.addMessage(User.getCurrentUser(), messageEntry);
                 }
 
-                uiController.displayFileMessage(new MessageEntry(User.getCurrentUser(), fileMessage));
-                uiController.showMessage("Archivo enviado: " + selectedFile.getName());
+                viewManager.displayFileMessage(new MessageEntry(User.getCurrentUser(), fileMessage));
+                viewManager.showMessage("Archivo enviado: " + selectedFile.getName());
             } catch (IOException ex) {
                 Logger.getLogger(ChatManager.class.getName()).log(Level.SEVERE, null, ex);
             } 
@@ -611,7 +638,7 @@ public class ChatManager {
             @Override
             public void onSuccess(List<User> result) {
                 setContacts(result);
-                uiController.setContactsList(result);
+                viewManager.setContactsList(result);
                 
                 startApplication();
             }
@@ -626,7 +653,7 @@ public class ChatManager {
     /** Inicializa la app **/
     private void startApplication(){
         ChatServer.getInstance(localPort).startServer();
-        uiController.showChatWindow();
+        viewManager.showChatWindow();
     }
     
     /**
@@ -743,13 +770,13 @@ public class ChatManager {
         String chatSessionId = User.getCurrentUser().getUserId() + ":" + contactId;
         chatSessions.remove(chatSessionId);
 
-        uiController.updateContactPanel(contactId, peerId, false);
+        viewManager.updateContactPanel(contactId, peerId, false);
         if (actualPeer != null && actualPeer.getPeerId().equals(peerId)){
             actualPeer = null;
-            uiController.showMessage(contactUser.getUsername() + " se ha desconectado. No tienes ningun chat seleccionado");
-            uiController.setContactPanelAsSelected(null);
+            viewManager.showMessage(contactUser.getUsername() + " se ha desconectado. No tienes ningun chat seleccionado");
+            viewManager.setContactPanelAsSelected(null);
         } else {
-            uiController.showMessage(contactUser.getUsername() + " se ha desconectado.");
+            viewManager.showMessage(contactUser.getUsername() + " se ha desconectado.");
         }
     }
      
@@ -819,7 +846,7 @@ public class ChatManager {
         if (connection != null && connection.isConnected()) {
             actualPeer = connection;
         } else {
-            uiController.showErrorMessage("No hay una conexión activa con este contacto");
+            viewManager.showErrorMessage("No hay una conexión activa con este contacto");
             actualPeer = null;
         }
     }

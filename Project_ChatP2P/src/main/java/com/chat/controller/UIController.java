@@ -23,12 +23,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
 /**
  *
  * @author jairo
  */
-public class UIController {
+public class UIController implements ViewManager {
 
     /** Propiedades **/
     private Login loginWindow;             // Ventana de Login
@@ -251,6 +250,7 @@ public class UIController {
     }
     
     /** Muestra la ventana de Chat cerrando la de Login y Registro **/
+    @Override
     public void showChatWindow(){
         loginWindow.dispose();
         registerWindow.dispose();
@@ -266,42 +266,61 @@ public class UIController {
 
     /** MÉTODOS PARA ACTUALIZAR LA INTERFAZ **/
 
-    /** Actualiza la lista de contactos de la ventana del Chat **/
+    /** Actualiza la lista de contactos de la ventana del Chat
+     * @param contacts **/
+    @Override
     public void setContactsList(List<User> contacts){
         chatWindow.setContactsList(contacts);
     }
     
-    /** Muestra los contactos en la ventana de Chat **/
+    /** Muestra los contactos en la ventana de Chat
+     * @param contacts **/
+    @Override
     public void displayContacts(List<User> contacts) {
         chatWindow.setContactsList(contacts);
     }
     
-    /** Crea un nuevo panel de Contacto **/
+    /** Crea un nuevo panel de Contacto
+     * @param contact
+     * @param peerId **/
+    @Override
     public void createContactPanel(User contact, String peerId) {
         chatWindow.createPanelContact(contact, peerId);
     }
     
-    /** Actualiza un Panel de Contacto **/
+    /** Actualiza un Panel de Contacto
+     * @param userId
+     * @param peerId
+     * @param connected **/
+    @Override
     public void updateContactPanel(String userId, String peerId, boolean connected) {
         chatWindow.updateContactPanel(userId, peerId, connected);
     }
     
-    /** Establece el panel del Peer seleccionado como marcado **/
+    /** Establece el panel del Peer seleccionado como marcado
+     * @param contactId **/
+    @Override
     public void setContactPanelAsSelected(String contactId){
         chatWindow.setContactPanelAsSelected(contactId);
     }
     
-    /** Muestra un chat en la pantalla de Chat **/
+    /** Muestra un chat en la pantalla de Chat
+     * @param messageHistory **/
+    @Override
     public void displayChat(List<MessageEntry> messageHistory){
         chatWindow.displayChat(messageHistory);
     }
     
-    /** Muestra una entrada de mensaje de texto en la pantalla de Chat **/
+    /** Muestra una entrada de mensaje de texto en la pantalla de Chat
+     * @param messageEntry **/
+    @Override
     public void displayTextMessage(MessageEntry messageEntry){
         chatWindow.displayTextMessage(messageEntry);
     }
     
-    /** Muestra una entrada de mensaje de archivo en la pantalla de Chat **/
+    /** Muestra una entrada de mensaje de archivo en la pantalla de Chat
+     * @param messageEntry **/
+    @Override
     public void displayFileMessage(MessageEntry messageEntry){
         chatWindow.displayFileMessage(messageEntry);
     }
@@ -312,6 +331,7 @@ public class UIController {
      * Muestra una ventana con un mensaje informativo
      * @param message Mensaje a mostrar
      */
+    @Override
     public void showMessage(String message) {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(
@@ -324,6 +344,7 @@ public class UIController {
      * Muestra una ventana de error con un mensaje
      * @param message Mensaje a mostrar
      */
+    @Override
     public void showErrorMessage(String message) {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(

@@ -1,9 +1,10 @@
 com\chat\ui\gui\Login$6.class
-com\components\Avatar\AvatarBeanInfo.class
 com\chat\controller\UIController$3.class
 com\chat\network\api\UserClient$3.class
+com\components\avatar\AvatarBeanInfo.class
 com\chat\ui\gui\Register$5.class
 com\components\scrollPanel\ModernScrollBarUI$1.class
+com\chat\controller\ConsoleController.class
 com\chat\model\Message$MessageType.class
 com\chat\ui\gui\Login$3.class
 com\chat\ui\gui\Register$11.class
@@ -15,6 +16,7 @@ com\chat\ui\gui\AddContact$1.class
 com\chat\ui\gui\Register$8.class
 com\chat\controller\UIController$9.class
 com\chat\ui\gui\Register.class
+com\chat\ui\cui\Login.class
 com\chat\controller\ChatManager$4.class
 com\chat\model\Avatar.class
 com\chat\ui\gui\AddContact$4.class
@@ -39,7 +41,6 @@ com\chat\network\api\ApiResponse.class
 com\chat\ui\gui\Login$8.class
 com\chat\network\api\Test$2.class
 com\chat\network\api\UserClient$5.class
-com\components\contactpanel\ContactPanel$1.class
 com\chat\ui\gui\AddContact$12.class
 com\chat\ui\gui\AddContact$6.class
 com\chat\controller\UIController$2.class
@@ -47,6 +48,7 @@ com\chat\utils\Constants.class
 com\chat\ui\gui\Register$4.class
 com\chat\ui\gui\Login$7.class
 com\chat\controller\ChatManager$6.class
+com\chat\controller\ViewManager.class
 com\chat\ui\gui\Chat$6.class
 com\chat\network\api\UserClient$6.class
 com\chat\network\api\UserClient$UserCallback.class
@@ -56,11 +58,12 @@ com\chat\controller\UIController$13.class
 com\chat\network\api\Test$1.class
 com\chat\network\api\Test.class
 com\chat\controller\ChatManager.class
+com\chat\ui\cui\AddContact.class
+com\components\contactPanel\ContactPanel$1.class
 com\chat\controller\UIController$12.class
 com\chat\ui\gui\Chat$4.class
 com\chat\ui\gui\AddContact$13.class
 com\chat\ui\gui\AddContact$5.class
-com\components\contactpanel\ContactPanel.class
 com\chat\network\api\UserClient.class
 com\components\scrollPanel\ModernScrollBarUI.class
 com\chat\ui\gui\Register$9.class
@@ -74,15 +77,16 @@ com\chat\ui\gui\AddContact.class
 com\chat\ui\gui\Chat$1.class
 com\chat\ui\gui\Login$2.class
 com\chat\ui\gui\AddContact$10.class
-com\components\Avatar\Avatar.class
 com\components\scrollPanel\ModernScrollBarUI$2.class
 com\chat\network\api\UserClient$1.class
 com\chat\network\api\UserClient$4.class
+com\components\avatar\Avatar.class
 com\chat\ui\gui\Register$10.class
 com\chat\ui\gui\Login.class
 com\chat\controller\UIController$10.class
 com\chat\ui\gui\Register$7.class
 com\chat\controller\ChatManager$2.class
+com\chat\ui\cui\Register.class
 com\chat\Project_ChatP2P.class
 com\chat\controller\UIController$5.class
 com\chat\model\Message.class
@@ -92,7 +96,9 @@ com\chat\network\socket\PeerConnection.class
 com\chat\ui\gui\Login$5.class
 com\components\scrollPanel\ScrollBarCustom.class
 com\components\scrollPanel\ScrollBarCustomBeanInfo.class
+com\chat\ui\cui\Chat.class
 com\chat\ui\gui\Chat$2.class
+com\components\contactPanel\ContactPanel.class
 com\chat\ui\gui\AddContact$3.class
 com\chat\ui\gui\Register$6.class
 com\chat\network\api\UserClient$2.class
