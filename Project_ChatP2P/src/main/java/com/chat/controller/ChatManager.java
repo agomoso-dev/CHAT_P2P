@@ -28,10 +28,10 @@ public class ChatManager {
     /** Propiedades **/
     private static ChatManager instance;                    // Singleton
     
-   // private UIController uiController;                      // UI Manager
+    //private UIController uiController;                    // UI Manager
+    //private ConsoleController consoleController;          // Console Manager
+    private ViewManager viewManager;                        // View Manager
     
-   // private ConsoleController consoleController;            // Console Manager
-    private ViewManager viewManager; 
     private Map<String, PeerConnection> connections;        // Conexiones de Peers activas
     private Map<String, ChatClient> chatClients;            // Conexiones a Peers activas
     private Map<String, User> contacts;                     // Lista de contactos
@@ -69,35 +69,38 @@ public class ChatManager {
         this.contactIdToPeerIdMap = new ConcurrentHashMap<>();
         
         this.chatSessions = new ConcurrentHashMap<>();
-        if(OSIdenfifier().equals("windows")){
+        
+        if (OSIdentifier().equals("windows")) {
             this.viewManager = new UIController();
-        }else if(OSIdenfifier().equals("linux")){
+        } else if (OSIdentifier().equals("linux")) {
             this.viewManager = new ConsoleController();
-        } else{
-            throw new UnsupportedOperationException("Sistema operativo no soportado: " + OSIdenfifier());
+        } else {
+            throw new UnsupportedOperationException("Sistema operativo no soportado: " + OSIdentifier());
         }
     }
+    
     /**
      * Identifica el sistema operativo actual del usuario
      * 
      * @return String con el nombre del sistema operativo ("window", "linux", "unix", "macOS")
      */
-    public String OSIdenfifier(){
-        String os = System.getProperty("os.name").toLowerCase();
+    public String OSIdentifier() {
+        String osName = System.getProperty("os.name").toLowerCase();
 
-        if (os.contains("win")) {
-            os = "windows";
-        } else if (os.contains("nux")) {
-            os = "linux";
-        }else if (os.contains("nix")){
-            os = "unix";
-        }else if (os.contains("mac")){
-            os = "macOS";
-        } else {
-            System.out.println("Sistema operativo desconocido");
-        }
-        return os;
+            if (osName.contains("win")) {
+                return "windows";
+            } else if (osName.contains("nux")) {
+                return "linux";
+            } else if (osName.contains("nix")) {
+                return "unix";
+            } else if (osName.contains("mac")) {
+                return "macOS";
+            } else {
+                System.out.println("Sistema operativo desconocido");
+                return "desconocido";
+            }
     }
+    
     /**
      * Gestiona el flujo de logearse en la app
      * @param userId ID del usuario que se logea
@@ -130,6 +133,7 @@ public class ChatManager {
         String userIp = InetAddress.getLocalHost().getHostAddress();
 
         try {
+            
             Avatar userAvatar = avatarPath != null && !avatarPath.isEmpty() 
                               ? new Avatar(avatarPath, null) 
                               : null;

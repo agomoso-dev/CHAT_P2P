@@ -4,7 +4,6 @@
  */
 package com.chat.controller;
 
-import java.util.List;
 
 import com.chat.model.Message;
 import com.chat.model.MessageEntry;
