@@ -84,7 +84,6 @@ public class AddContact extends javax.swing.JFrame {
         BtnAddContct = new javax.swing.JPanel();
         TxtAddContact = new javax.swing.JLabel();
         Fondo_Derecha = new javax.swing.JPanel();
-        avatar1 = new com.components.avatar.Avatar();
         header = new javax.swing.JPanel();
         Exitbtn = new javax.swing.JPanel();
         TxtExit = new javax.swing.JLabel();
@@ -204,23 +203,15 @@ public class AddContact extends javax.swing.JFrame {
 
         Fondo_Derecha.setBackground(new java.awt.Color(7, 134, 184));
 
-        avatar1.setCornerRadius(250);
-
         javax.swing.GroupLayout Fondo_DerechaLayout = new javax.swing.GroupLayout(Fondo_Derecha);
         Fondo_Derecha.setLayout(Fondo_DerechaLayout);
         Fondo_DerechaLayout.setHorizontalGroup(
             Fondo_DerechaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, Fondo_DerechaLayout.createSequentialGroup()
-                .addContainerGap(103, Short.MAX_VALUE)
-                .addComponent(avatar1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(87, 87, 87))
+            .addGap(0, 310, Short.MAX_VALUE)
         );
         Fondo_DerechaLayout.setVerticalGroup(
             Fondo_DerechaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, Fondo_DerechaLayout.createSequentialGroup()
-                .addContainerGap(21, Short.MAX_VALUE)
-                .addComponent(avatar1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29))
+            .addGap(0, 170, Short.MAX_VALUE)
         );
 
         bg.add(Fondo_Derecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 0, 310, 170));
@@ -557,7 +548,6 @@ public class AddContact extends javax.swing.JFrame {
     private javax.swing.JLabel TxtMinimize;
     private javax.swing.JLabel TxtPort;
     private javax.swing.JLabel TxtTitle;
-    private com.components.avatar.Avatar avatar1;
     private javax.swing.JPanel bg;
     private javax.swing.JPanel header;
     private javax.swing.JEditorPane jEditorPane1;

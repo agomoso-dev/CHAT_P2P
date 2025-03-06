@@ -15,9 +15,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -77,7 +74,7 @@ public class ContactPanel extends JPanel {
         setupLayout();
         setupListeners();
         displayUserInfo();
-    
+            
     }
     /**
      * Inicializa los componentes del panel

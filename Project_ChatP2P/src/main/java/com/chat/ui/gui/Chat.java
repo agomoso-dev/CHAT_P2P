@@ -54,7 +54,6 @@ public class Chat extends javax.swing.JFrame {
     public void setContactsList(List<User> contacts){
         SwingUtilities.invokeLater(() -> {
             this.contacts = contacts;
-
             displayContacts();
         });
     }
@@ -85,10 +84,6 @@ public class Chat extends javax.swing.JFrame {
     
     public JButton getBtnAddContact() {
         return btnAddContact;
-    }
-    
-    public JButton getBtnProfile() {
-        return btnProfile;
     }
     
     /** Datos de Mensaje **/
@@ -218,7 +213,10 @@ public class Chat extends javax.swing.JFrame {
     }
 
     public void createPanelContact(User contact, String peerId) {
-        ContactPanel panel = new ContactPanel(contact);
+        ContactPanel panel = contactsPanels.get(contact.getUserId());
+        if (panel != null) return;
+        
+        panel = new ContactPanel(contact);
         panel.setConnected(peerId);
         contactsPanels.put(contact.getUserId(), panel);
 
@@ -232,12 +230,13 @@ public class Chat extends javax.swing.JFrame {
     }
     
     public void updateContactPanel(String contactId, String peerId, boolean connected) {
-        ContactPanel contactPanel = contactsPanels.get(contactId);
+        ContactPanel panel = contactsPanels.get(contactId);
+        if (panel == null) return;
         
         if (connected)
-            contactPanel.setConnected(peerId);
+            panel.setConnected(peerId);
         else
-            contactPanel.setDisconnected();
+            panel.setDisconnected();
     }
     
     private void removeGlue() {
@@ -287,7 +286,6 @@ public class Chat extends javax.swing.JFrame {
         jScrollPaneContacts = new javax.swing.JScrollPane();
         pnlContacts = new javax.swing.JPanel();
         btnAddContact = new javax.swing.JButton();
-        btnProfile = new javax.swing.JButton();
         jScrollPaneChatArea = new javax.swing.JScrollPane();
         TxtChatArea = new javax.swing.JEditorPane();
 
@@ -525,10 +523,6 @@ public class Chat extends javax.swing.JFrame {
         btnAddContact.setText("+");
         bg.add(btnAddContact, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 100, 60, 40));
 
-        btnProfile.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        btnProfile.setText("...");
-        bg.add(btnProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 150, 60, 40));
-
         jScrollPaneChatArea.setViewportView(TxtChatArea);
 
         bg.add(jScrollPaneChatArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 520, 360));
@@ -695,7 +689,6 @@ public class Chat extends javax.swing.JFrame {
     private javax.swing.JLabel TxtMinimizar;
     private javax.swing.JPanel bg;
     private javax.swing.JButton btnAddContact;
-    private javax.swing.JButton btnProfile;
     private javax.swing.JPanel header;
     private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JScrollPane jScrollPane1;

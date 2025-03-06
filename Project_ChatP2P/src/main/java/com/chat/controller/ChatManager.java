@@ -222,20 +222,32 @@ public class ChatManager {
      * @param peerConnection Conexión Peer
      */
     public void handleConnectionFromPeer(String peerId, PeerConnection peerConnection) {
-        connections.put(peerId, peerConnection);
-        
+        if (connections.containsKey(peerId)) {
+            try {
+                PeerConnection existingConnection = connections.get(peerId);
+                if (existingConnection != null && existingConnection.isConnected()) {
+                    existingConnection.close();
+                }
+            } catch (Exception e) {
+                System.out.println("Error al cerrar conexión existente: " + e.getMessage());
+            }
+
+            connections.put(peerId, peerConnection);
+        } else {
+            connections.put(peerId, peerConnection);
+        }
+
         viewManager.showMessage("Conexión externa desde " + peerId);
-        
+
         try {
             User currentUser = User.getCurrentUser();
             Message userInfo = Message.createUserInfoMessage(currentUser);
-            
+
             peerConnection.sendMessage(userInfo);
         } catch(IOException ex) {
             System.out.println("Error enviando información de usuario: " + ex.getMessage());
         }
     }
-
 
     /**
      * Gestiona el flujo de conectarse a un Peer
@@ -270,24 +282,24 @@ public class ChatManager {
     * @return True si la conexión fue exitosa, false en caso contrario
     */
     public boolean connectToPeer(String ip, Integer port){
-       try {
-            ChatClient chatClient = new ChatClient();
-            chatClient.connect(ip, port);
-
-            String contactId = ip + ":" + port;
-            
-            registerNewConnection(contactId, chatClient);
-            
-            viewManager.showMessage("Conectado exitosamente a " + contactId);
-            
-            sendInfoUserMessage(chatClient.getPeerConnection());
-            
-            return true;
-       } catch(IOException e) {
-            viewManager.showErrorMessage("No se ha podido realizar la conexión");
-            return false;
-       }
+    try {
+        ChatClient chatClient = new ChatClient();
+        chatClient.connect(ip, port);
+        String contactId = ip + ":" + port;
+        
+        registerNewConnection(contactId, chatClient);
+        
+        viewManager.showMessage("Conectado exitosamente a " + contactId);
+        
+        sendInfoUserMessage(chatClient.getPeerConnection());
+        
+        return true;
+    } catch(IOException e) {
+        viewManager.showErrorMessage("No se ha podido realizar la conexión: " + e.getMessage());
+        e.printStackTrace(); // Esto imprimirá la traza de la excepción
+        return false;
     }
+}
 
     /**
      * Gestiona una desconexión externa, avisando al Peer de que nos desconectamos de él
@@ -342,7 +354,14 @@ public class ChatManager {
                 contactIdToPeerIdMap.remove(contactId);
                 chatSessions.remove(User.getCurrentUser().getUserId() + ":" + contactId);
                 
-                viewManager.showMessage("Desconexión realizada");
+                if (actualPeer != null && (actualPeer.getPeerId().equals(peerId) || actualPeer.getPeerId().equals(actualPeerId))) {
+                    actualPeer = null;
+                    viewManager.showMessage("Desconexión realizada. No tienes ningún chat seleccionado");
+                    viewManager.setContactPanelAsSelected(null);
+                } else {
+                    viewManager.showMessage("Desconexión realizada");
+                }
+
                 viewManager.updateContactPanel(contactId, actualPeerId, false);
             }
         } catch (Exception ex) {
@@ -768,7 +787,7 @@ public class ChatManager {
             }
         }
         
-        return contacts.get(contactId);
+        return contactId != null ? contacts.get(contactId) : null;
     }
     
     /**
@@ -816,7 +835,7 @@ public class ChatManager {
      * @param contactId ID del Contacto a registrar
      * @param chatClient ChatClient creado con el Contacto
      */
-    private void registerNewConnection(String contactId, ChatClient chatClient){
+    private synchronized void registerNewConnection(String contactId, ChatClient chatClient){
         String currentUserId = User.getCurrentUser().getUserId();
         String peerId = chatClient.getPeerConnection().getPeerId();
         
