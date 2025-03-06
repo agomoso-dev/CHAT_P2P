@@ -103,9 +103,9 @@ public class Register extends javax.swing.JFrame {
         Port = new javax.swing.JTextField();
         UserSeparator1 = new javax.swing.JSeparator();
         TxtUser = new javax.swing.JLabel();
-        avatar1 = new com.components.avatar.Avatar();
         BtnMas = new javax.swing.JPanel();
         TxtMas = new javax.swing.JLabel();
+        avatar1 = new com.components.avatar.Avatar();
 
         jScrollPane1.setViewportView(jEditorPane1);
 
@@ -306,9 +306,6 @@ public class Register extends javax.swing.JFrame {
         TxtUser.setText("Nombre de usuario");
         bg.add(TxtUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 130, -1, 30));
 
-        avatar1.setCornerRadius(200);
-        bg.add(avatar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 110, 125, 125));
-
         BtnMas.setBackground(new java.awt.Color(7, 134, 184));
 
         TxtMas.setFont(new java.awt.Font("Roboto Condensed", 1, 24)); // NOI18N
@@ -340,6 +337,9 @@ public class Register extends javax.swing.JFrame {
         );
 
         bg.add(BtnMas, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 250, 50, -1));
+
+        avatar1.setCornerRadius(250);
+        bg.add(avatar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 120, 120, 120));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

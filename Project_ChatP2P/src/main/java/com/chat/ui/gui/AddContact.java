@@ -204,23 +204,23 @@ public class AddContact extends javax.swing.JFrame {
 
         Fondo_Derecha.setBackground(new java.awt.Color(7, 134, 184));
 
-        avatar1.setCornerRadius(100);
+        avatar1.setCornerRadius(250);
 
         javax.swing.GroupLayout Fondo_DerechaLayout = new javax.swing.GroupLayout(Fondo_Derecha);
         Fondo_Derecha.setLayout(Fondo_DerechaLayout);
         Fondo_DerechaLayout.setHorizontalGroup(
             Fondo_DerechaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(Fondo_DerechaLayout.createSequentialGroup()
-                .addGap(105, 105, 105)
-                .addComponent(avatar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(105, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, Fondo_DerechaLayout.createSequentialGroup()
+                .addContainerGap(103, Short.MAX_VALUE)
+                .addComponent(avatar1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(87, 87, 87))
         );
         Fondo_DerechaLayout.setVerticalGroup(
             Fondo_DerechaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, Fondo_DerechaLayout.createSequentialGroup()
-                .addContainerGap(44, Short.MAX_VALUE)
-                .addComponent(avatar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26))
+                .addContainerGap(21, Short.MAX_VALUE)
+                .addComponent(avatar1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29))
         );
 
         bg.add(Fondo_Derecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 0, 310, 170));

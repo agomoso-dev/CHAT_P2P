@@ -367,16 +367,6 @@
             </Constraint>
           </Constraints>
         </Component>
-        <Component class="com.components.avatar.Avatar" name="avatar1">
-          <Properties>
-            <Property name="cornerRadius" type="int" value="200"/>
-          </Properties>
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="290" y="110" width="125" height="125"/>
-            </Constraint>
-          </Constraints>
-        </Component>
         <Container class="javax.swing.JPanel" name="BtnMas">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -424,6 +414,16 @@
             </Component>
           </SubComponents>
         </Container>
+        <Component class="com.components.avatar.Avatar" name="avatar1">
+          <Properties>
+            <Property name="cornerRadius" type="int" value="250"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
+              <AbsoluteConstraints x="290" y="120" width="120" height="120"/>
+            </Constraint>
+          </Constraints>
+        </Component>
       </SubComponents>
     </Container>
   </SubComponents>

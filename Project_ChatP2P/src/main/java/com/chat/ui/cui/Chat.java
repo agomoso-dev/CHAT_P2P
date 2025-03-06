@@ -29,7 +29,6 @@ public class Chat {
     }
     
     public void displayChat(List<MessageEntry> messages) {
-        clearScreen();
         System.out.println("\n=== CHAT ===");
         System.out.println("----------------------------------------");
         
@@ -149,8 +148,10 @@ public class Chat {
     public void showCommands() {
         System.out.println("\nComandos disponibles:");
         System.out.println("/contacts - Mostrar contactos");
+        System.out.println("/addcontact - <Agregar contacto");
+        System.out.println("/conect <ip> <puerto> - Conectar con un contacto");
+        System.out.println("/disconnect - Desconectar con un contacto");
         System.out.println("/select <id> - Seleccionar contacto");
-        System.out.println("/file - Enviar archivo");
         System.out.println("/help - Mostrar comandos");
         System.out.println("/exit - Salir");
     }

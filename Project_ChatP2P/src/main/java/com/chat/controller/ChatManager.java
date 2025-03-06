@@ -71,12 +71,17 @@ public class ChatManager {
         this.chatSessions = new ConcurrentHashMap<>();
         
         if (OSIdentifier().equals("windows")) {
-            this.viewManager = new UIController();
+           this.viewManager = new UIController();
         } else if (OSIdentifier().equals("linux")) {
             this.viewManager = new ConsoleController();
         } else {
-            throw new UnsupportedOperationException("Sistema operativo no soportado: " + OSIdentifier());
+            //throw new UnsupportedOperationException("Sistema operativo no soportado: " + OSIdentifier());
         }
+    }
+    
+    public ViewManager getViewmanager()
+    {
+        return this.viewManager;
     }
     
     /**
@@ -86,12 +91,16 @@ public class ChatManager {
      */
     public String OSIdentifier() {
         String osName = System.getProperty("os.name").toLowerCase();
-
+            
             if (osName.contains("win")) {
+                System.out.println("Windows");
                 return "windows";
             } else if (osName.contains("nux")) {
+                System.out.println("Linux");
+
                 return "linux";
             } else if (osName.contains("nix")) {
+                System.out.println("Unix");
                 return "unix";
             } else if (osName.contains("mac")) {
                 return "macOS";
@@ -106,7 +115,7 @@ public class ChatManager {
      * @param userId ID del usuario que se logea
      */
     public void handleLogin(String userId){
-        UserClient.getInstance().getUser(userId, new UserClient.UserCallback<User>() {
+            UserClient.getInstance().getUser(userId, new UserClient.UserCallback<User>() {
             @Override
             public void onSuccess(User result) {
                 loadData(result);
@@ -147,6 +156,9 @@ public class ChatManager {
                 public void onSuccess(User existingUser) {
                     if (existingUser != null) {
                         viewManager.showErrorMessage("Ya existe un usuario con el mismo puerto. Elige otro puerto.");
+                        if (viewManager instanceof ConsoleController c){
+                            c.showInitialMenu();
+                        }
                     } else {
                         registerNewUser(user);
                     }
@@ -237,11 +249,14 @@ public class ChatManager {
             boolean success = connectToPeer(ip, port);
 
             if (success && isContact(contactId)) {
+                System.out.println("Dentro del if");
                 String existingPeerId = contactIdToPeerIdMap.get(contactId);
                 if (existingPeerId == null) {
                     System.out.println("Actualizando Panel");
                     viewManager.updateContactPanel(contactId, contactId, true);
                 } else {
+                    contactIdToPeerIdMap.put(contactId, contactId);
+                    System.out.println("TAMALI + " +contactIdToPeerIdMap.size() );
                     System.out.println("No actualizando");
                 }
             }
@@ -255,7 +270,7 @@ public class ChatManager {
     * @param port Puerto del Peer
     * @return True si la conexión fue exitosa, false en caso contrario
     */
-    private boolean connectToPeer(String ip, Integer port){
+    public boolean connectToPeer(String ip, Integer port){
        try {
             ChatClient chatClient = new ChatClient();
             chatClient.connect(ip, port);
@@ -657,6 +672,11 @@ public class ChatManager {
     /** Inicializa la app **/
     private void startApplication(){
         ChatServer.getInstance(localPort).startServer();
+        
+        if(viewManager instanceof ConsoleController c){
+            c.menuCenter=false;
+        }
+        
         viewManager.showChatWindow();
     }
     
@@ -686,7 +706,7 @@ public class ChatManager {
      * @param contactId ID del contacto
      * @param peerId ID del Peer externo
      */
-    private void removePeer(String contactId, String peerId) {
+    public void removePeer(String contactId, String peerId) {
         ChatClient chatClient = chatClients.get(peerId);
         if (chatClient != null) {
             User currentUser = User.getCurrentUser();
@@ -734,8 +754,14 @@ public class ChatManager {
      * @return Contacto si existe, null en caso contarrio
      */
     private User getContactByPeerId(String peerId){
-        String contactId = null;
+        if (peerId == null) return null;
         
+        String contactId = null;
+
+        if (contactIdToPeerIdMap.size() == 0) {
+            return null;
+        }
+
         for (Map.Entry<String, String> entry : contactIdToPeerIdMap.entrySet()) {
             if (entry.getValue().equals(peerId)) {
                 contactId = entry.getKey();
@@ -770,11 +796,12 @@ public class ChatManager {
             chatClients.remove(contactId);
         }
 
-        contactIdToPeerIdMap.remove(contactId);
         String chatSessionId = User.getCurrentUser().getUserId() + ":" + contactId;
+        contactIdToPeerIdMap.remove(contactId);
         chatSessions.remove(chatSessionId);
 
         viewManager.updateContactPanel(contactId, peerId, false);
+        
         if (actualPeer != null && actualPeer.getPeerId().equals(peerId)){
             actualPeer = null;
             viewManager.showMessage(contactUser.getUsername() + " se ha desconectado. No tienes ningun chat seleccionado");
@@ -845,13 +872,17 @@ public class ChatManager {
      * @param peerId ID del Peer actual
      */
     private void setActualPeerConnection(String peerId){
-        System.out.println(peerId + "-2");
         PeerConnection connection = connections.get(peerId);
+        
         if (connection != null && connection.isConnected()) {
             actualPeer = connection;
         } else {
             viewManager.showErrorMessage("No hay una conexión activa con este contacto");
             actualPeer = null;
         }
+    }
+
+    public void getViewManager() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

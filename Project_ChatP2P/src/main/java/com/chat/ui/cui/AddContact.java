@@ -15,6 +15,7 @@ public class AddContact {
     public AddContact() {
         this.scanner = new Scanner(System.in);
         this.isVisible = false;
+        
     }
     
     /**
@@ -22,6 +23,9 @@ public class AddContact {
      * @return String con la IP introducida
      */
     public String getIp() {
+        if(!isVisible){
+            return null;
+        }
         System.out.println("\n=== AÑADIR CONTACTO ===");
         System.out.print("Introduce la IP: ");
         return scanner.nextLine().trim();

@@ -9,12 +9,16 @@ package com.components.contactPanel;
  * @author jairo
  */
 
-import com.chat.controller.ChatManager;
-import com.chat.model.User;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
@@ -24,7 +28,26 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+
+import com.chat.controller.ChatManager;
+import com.chat.model.User;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+
+import com.components.avatar.Avatar;
 
 /**
  * Panel que representa un contacto individual
@@ -54,61 +77,67 @@ public class ContactPanel extends JPanel {
         setupLayout();
         setupListeners();
         displayUserInfo();
-    }
     
+    }
     /**
      * Inicializa los componentes del panel
      */
     private void initComponents() {
         lblAvatar = new JLabel();
+        
         lblName = new JLabel("Usuario");
-        lblName.setFont(new Font("Arial", Font.BOLD, 14));
+        lblName.setFont(new Font("Arial", Font.PLAIN, 11));
         
         btnConnect = new JButton("Conectar");
         btnConnect.setFocusPainted(false);
         btnConnect.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnConnect.setPreferredSize(new Dimension(100, 30));
-        btnConnect.setMinimumSize(new Dimension(100, 30));
-        btnConnect.setMaximumSize(new Dimension(100, 30));
-
+        btnConnect.setFont(new Font("Arial", Font.PLAIN, 10));
+        Avatar avatar = new Avatar();
+        avatar.setPreferredSize(new Dimension(30, 30));
+        avatar.setCornerRadius(15); // Make it circular (radius = width/2)
+        lblAvatar = avatar;
     }
-    
-    /**
-     * Configura el layout del panel
-     */
+
+
     private void setupLayout() {
         setBackground(Color.WHITE);
-        setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)),
-                new EmptyBorder(10, 10, 10, 10)
-        ));
-        setPreferredSize(new Dimension(300, 70));
-
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 10, 5, 10);
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
-        lblAvatar.setPreferredSize(new Dimension(40, 40));
-        add(lblAvatar, gbc);
-
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1; 
-        lblName.setPreferredSize(new Dimension(120, 30));
-        lblName.setHorizontalAlignment(SwingConstants.LEFT);
-        add(lblName, gbc);
-
-        gbc.gridx = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
-        btnConnect.setPreferredSize(new Dimension(100, 30));
-        btnConnect.setFont(new Font("Arial", Font.BOLD, 12));
-        add(btnConnect, gbc);
+        setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)));
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, 40)); 
+        setPreferredSize(new Dimension(200, 40)); 
+    
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        
+        // Left padding
+        add(Box.createHorizontalStrut(8));
+        
+        // Avatar (already configured in initComponents)
+        Avatar avatar = (Avatar) lblAvatar;
+        avatar.setPreferredSize(new Dimension(30, 30));
+        avatar.setMaximumSize(new Dimension(30, 30));
+        avatar.setMinimumSize(new Dimension(30, 30));
+        add(avatar);
+        
+        add(Box.createHorizontalStrut(8));
+        
+        // Username panel
+        JPanel namePanel = new JPanel(new BorderLayout());
+        namePanel.setOpaque(false);
+        lblName.setOpaque(false);
+        lblName.setForeground(new Color(50, 50, 50));
+        namePanel.add(lblName, BorderLayout.CENTER);
+        add(namePanel);
+        
+        add(Box.createHorizontalStrut(8));
+        
+        // Connect button
+        btnConnect.setPreferredSize(new Dimension(70, 25));
+        btnConnect.setMaximumSize(new Dimension(70, 25));
+        btnConnect.setMinimumSize(new Dimension(70, 25));
+        btnConnect.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        btnConnect.setFocusPainted(false);
+        add(btnConnect);
+        
+        add(Box.createHorizontalStrut(8));
     }
     
     /**
@@ -209,17 +238,21 @@ public class ContactPanel extends JPanel {
      */
     private BufferedImage createCircularAvatar(BufferedImage originalImage, int diameter) {
         BufferedImage circularImage = new BufferedImage(diameter, diameter, BufferedImage.TYPE_INT_ARGB);
-        
         Graphics2D g2d = circularImage.createGraphics();
         
+        // Enable antialiasing for smoother edges
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
-        g2d.setClip(new Ellipse2D.Float(0, 0, diameter, diameter));
+        // Create circular clip
+        Ellipse2D.Float circle = new Ellipse2D.Float(0, 0, diameter, diameter);
+        g2d.setClip(circle);
         
+        // Calculate dimensions to maintain aspect ratio
         int size = Math.min(originalImage.getWidth(), originalImage.getHeight());
         int x = (originalImage.getWidth() - size) / 2;
         int y = (originalImage.getHeight() - size) / 2;
         
+        // Draw the image maintaining aspect ratio
         g2d.drawImage(originalImage, 0, 0, diameter, diameter, x, y, x + size, y + size, null);
         
         g2d.dispose();
@@ -246,10 +279,23 @@ public class ContactPanel extends JPanel {
      */
     public void setAsSelected(boolean selected) {
         if (selected) {
-            setBackground(Color.yellow);
+            setBackground(new Color(255, 255, 200)); // Lighter yellow
+            // Make all components match parent background
+            for (Component comp : getComponents()) {
+                if (comp instanceof JPanel) {
+                    comp.setBackground(new Color(255, 255, 200));
+                }
+            }
         } else {
             setBackground(Color.WHITE);
+            // Reset component backgrounds
+            for (Component comp : getComponents()) {
+                if (comp instanceof JPanel) {
+                    comp.setBackground(Color.WHITE);
+                }
+            }
         }
+        repaint();
     }
     
     // Getters y Setters

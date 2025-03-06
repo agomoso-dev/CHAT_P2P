@@ -40,7 +40,6 @@ public class ClientHandler implements Runnable {
     private void handleMessageReceived(Message message) {
         String peerId = peerConnection.getPeerId();
         
-        System.out.println("MENSAJE RECIBIDO");
         ChatManager.getInstance().handleMessageReceived(peerId, message);
     }
 
@@ -50,7 +49,7 @@ public class ClientHandler implements Runnable {
     private void handleDisconnection() {
         String peerId = peerConnection.getPeerId();
         peerConnection.close();
-
+        
         ChatManager.getInstance().handleUnexpectedDisconnection(peerConnection.getPeerId());
     }
 
