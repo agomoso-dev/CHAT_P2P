@@ -248,16 +248,15 @@ public class ChatManager {
         new Thread(() -> {
             boolean success = connectToPeer(ip, port);
 
-            if (success && isContact(contactId)) {
-                System.out.println("Dentro del if");
-                String existingPeerId = contactIdToPeerIdMap.get(contactId);
-                if (existingPeerId == null) {
-                    System.out.println("Actualizando Panel");
-                    viewManager.updateContactPanel(contactId, contactId, true);
-                } else {
-                    contactIdToPeerIdMap.put(contactId, contactId);
-                    System.out.println("TAMALI + " +contactIdToPeerIdMap.size() );
-                    System.out.println("No actualizando");
+            if (success) {
+                if(isContact(contactId)){
+                    String existingPeerId = contactIdToPeerIdMap.get(contactId);
+                    if (existingPeerId != null) {
+                        viewManager.updateContactPanel(contactId, existingPeerId, true);
+                    } else {
+                        contactIdToPeerIdMap.put(contactId, contactId);
+                        viewManager.updateContactPanel(contactId, contactId, true);
+                    }
                 }
             }
         }).start();
