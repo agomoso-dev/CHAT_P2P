@@ -10,8 +10,10 @@ import java.util.Scanner;
  * @author wenfi
  */
 public class Login {
-    private Scanner scanner;
     
+    /** Propiedades **/
+    private Scanner scanner;        // Entrada de datos
+        
     public Login() {
         this.scanner = new Scanner(System.in);
     }
@@ -19,14 +21,15 @@ public class Login {
     public String getUserId() {
         System.out.println("=== LOGIN ===");
         System.out.print("Introduce tu ID: ");
+        
         return scanner.nextLine();
     }
     
     public void setVisible(boolean visible) {
         if (visible) {
-            // Clear console
             System.out.print("\033[H\033[2J");
             System.out.flush();
         }
     }  
+    
 }

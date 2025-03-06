@@ -1,6 +1,5 @@
 package com.components.scrollPanel;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -13,6 +12,7 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class ModernScrollBarUI extends BasicScrollBarUI {
 
+    /** Propiedades **/
     private final int THUMB_SIZE = 60;
 
     @Override

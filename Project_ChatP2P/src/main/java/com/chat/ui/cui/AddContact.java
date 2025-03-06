@@ -9,13 +9,15 @@ import java.util.Scanner;
  * @author wenfi
  */
 public class AddContact {
-    private Scanner scanner;
-    private boolean isVisible;
+    
+    /** Propiedades **/
+    private Scanner scanner;        // Entrada de datos
+    
+    private boolean isVisible;      // Define el estado del menú
     
     public AddContact() {
         this.scanner = new Scanner(System.in);
         this.isVisible = false;
-        
     }
     
     /**
@@ -23,11 +25,13 @@ public class AddContact {
      * @return String con la IP introducida
      */
     public String getIp() {
-        if(!isVisible){
+        if(!isVisible) {
             return null;
         }
+        
         System.out.println("\n=== AÑADIR CONTACTO ===");
         System.out.print("Introduce la IP: ");
+        
         return scanner.nextLine().trim();
     }
     
@@ -37,6 +41,7 @@ public class AddContact {
      */
     public Integer getPort() {
         System.out.print("Introduce el puerto: ");
+        
         try {
             return Integer.parseInt(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
@@ -65,4 +70,5 @@ public class AddContact {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
+    
 }

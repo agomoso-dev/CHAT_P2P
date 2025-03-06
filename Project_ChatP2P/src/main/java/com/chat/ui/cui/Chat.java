@@ -10,17 +10,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.chat.model.Message;
+import com.chat.model.Message.MessageType;
 import com.chat.model.MessageEntry;
 import com.chat.model.User;
+import java.io.File;
 /**
  *
  * @author wenfi
  */
 public class Chat {
-    private Scanner scanner;
-    private List<User> contacts;
-    private Map<String, String> contactStatuses;
-    private String selectedContactId;
+    
+    /** Propiedades **/
+    private Scanner scanner;                       // Entrada de datos
+    
+    private List<User> contacts;                   // Lista de contactos
+    private Map<String, String> contactStatuses;   // Status de cada contacto
+    
+    private String selectedContactId;              // Contacto seleccionado
     
     public Chat() {
         this.scanner = new Scanner(System.in);
@@ -28,21 +34,27 @@ public class Chat {
         this.contactStatuses = new ConcurrentHashMap<>();
     }
     
-    public void displayChat(List<MessageEntry> messages) {
+    public void displayChat(List<MessageEntry> messageHistory) {
         System.out.println("\n=== CHAT ===");
         System.out.println("----------------------------------------");
         
-        for (MessageEntry messageEntry : messages) {
-            String senderUsername = messageEntry.getSender().getUsername();
-            if (senderUsername.equals(User.getCurrentUser().getUsername())) {
-                senderUsername = "Yo";
+        if (messageHistory.size() > 0) {
+            for (MessageEntry messageEntry : messageHistory) {
+                MessageType messageType = messageEntry.getMessage().getType();
+                
+                switch(messageType){
+                    case Message.MessageType.TEXT:
+                        displayTextMessage(messageEntry);
+                        break;
+                    case Message.MessageType.FILE:
+                        displayFileMessage(messageEntry);
+                        break;
+                    default:
+                        return;
+                }
             }
-            
-            System.out.printf("[%s] %s: %s\n", 
-                messageEntry.getTimestamp(),
-                senderUsername, 
-                messageEntry.getMessage().getContent());
         }
+        
         System.out.println("----------------------------------------");
     }
     
@@ -50,6 +62,7 @@ public class Chat {
         this.contacts = contacts;
         displayContacts();
     }
+    
     public void createPanelContact(User contact, String peerId) {
         // Agregar el contacto a la lista si no existe
         if (!contacts.contains(contact)) {
@@ -61,25 +74,42 @@ public class Chat {
         // Actualizar la vista de contactos
         displayContacts();
     }
+    
     public void displayContacts() {
         System.out.println("\n=== CONTACTOS ===");
         System.out.println("----------------------------------------");
+        
         for (User contact : contacts) {
             String status = contactStatuses.getOrDefault(contact.getUserId(), "offline");
-            String selectedMark = contact.getUserId().equals(selectedContactId) ? ">" : " ";
+            String selectedMark = contact.getUserId().equals(selectedContactId) ? ">>" : " ";
             
-            System.out.printf("%s %s (%s)\n", 
+            System.out.printf("%s %s (%s) [%s]\n", 
                 selectedMark,
-                contact.getUsername(), 
+                contact.getUsername(),
+                contact.getUserId(),
                 status);
         }
+        
         System.out.println("----------------------------------------");
     }
     
     public Message getMessage() {
         System.out.print("\nEscribe tu mensaje: ");
         String content = scanner.nextLine();
+        
         return Message.createTextMessage(content);
+    }
+    
+    public void displayTextMessage(MessageEntry messageEntry) {
+        String senderUsername = messageEntry.getSender().getUsername();
+        if (senderUsername.equals(User.getCurrentUser().getUsername())) {
+            senderUsername = "Yo";
+        }
+            
+        System.out.printf("[%s] %s: %s\n", 
+            messageEntry.getTimestamp(),
+            senderUsername, 
+            messageEntry.getMessage().getContent());
     }
     
     public void displaySystemMessage(String message) {
@@ -93,18 +123,25 @@ public class Chat {
         String fileName = (String) message.getFileData().get("name");
         long fileSize = (long) message.getFileData().get("size");
         
+        String formattedSize = formatFileSize(fileSize);
+        
         String senderUsername = sender.getUsername();
+        
         if (senderUsername.equals(User.getCurrentUser().getUsername())) {
             System.out.printf("\n[%s] Yo: He enviado un archivo: %s (%s)\n",
                 messageEntry.getTimestamp(),
                 fileName,
-                formatFileSize(fileSize));
+                formattedSize);
         } else {
-            System.out.printf("\n[%s] %s: Ha enviado un archivo: %s (%s)\n",
+            File downloadsDir = new File("downloads");
+            File downloadedFile = new File(downloadsDir, fileName);
+            
+            System.out.printf("\n[%s] %s: Ha enviado un archivo: %s (%s)\nGuardado en: %s\n",
                 messageEntry.getTimestamp(),
                 senderUsername,
                 fileName,
-                formatFileSize(fileSize));
+                formattedSize,
+                downloadedFile.getAbsolutePath());
         }
     }
     
@@ -148,11 +185,15 @@ public class Chat {
     public void showCommands() {
         System.out.println("\nComandos disponibles:");
         System.out.println("/contacts - Mostrar contactos");
-        System.out.println("/addcontact - <Agregar contacto");
-        System.out.println("/conect <ip> <puerto> - Conectar con un contacto");
-        System.out.println("/disconnect - Desconectar con un contacto");
+        System.out.println("/addcontact - Agregar contacto");
+        System.out.println("/connect <ip> <puerto> - Conectar con un contacto");
+        System.out.println("/disconnect <id> - Desconectar con un contacto");
         System.out.println("/select <id> - Seleccionar contacto");
+        System.out.println("/file <ruta> - Mandar archivo durante un chat");
+        System.out.println("/id - Ver mi propio ID");
         System.out.println("/help - Mostrar comandos");
         System.out.println("/exit - Salir");
+        System.out.println("");
     }
+    
 }

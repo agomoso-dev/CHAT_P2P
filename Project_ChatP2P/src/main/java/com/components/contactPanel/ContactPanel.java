@@ -34,9 +34,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
 
 import com.chat.controller.ChatManager;
 import com.chat.model.User;
@@ -76,6 +74,7 @@ public class ContactPanel extends JPanel {
         displayUserInfo();
             
     }
+    
     /**
      * Inicializa los componentes del panel
      */
@@ -95,7 +94,7 @@ public class ContactPanel extends JPanel {
         lblAvatar = avatar;
     }
 
-
+    /** Configura el Layout **/
     private void setupLayout() {
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)));
@@ -104,10 +103,8 @@ public class ContactPanel extends JPanel {
     
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         
-        // Left padding
         add(Box.createHorizontalStrut(8));
         
-        // Avatar (already configured in initComponents)
         Avatar avatar = (Avatar) lblAvatar;
         avatar.setPreferredSize(new Dimension(30, 30));
         avatar.setMaximumSize(new Dimension(30, 30));
@@ -116,7 +113,6 @@ public class ContactPanel extends JPanel {
         
         add(Box.createHorizontalStrut(8));
         
-        // Username panel
         JPanel namePanel = new JPanel(new BorderLayout());
         namePanel.setOpaque(false);
         lblName.setOpaque(false);

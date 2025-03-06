@@ -10,8 +10,10 @@ import java.util.Scanner;
  * @author wenfi
  */
 public class Register {
-    private Scanner scanner;
     
+    /** Propiedades **/
+    private Scanner scanner;        // Entrada de datos
+        
     public Register() {
         this.scanner = new Scanner(System.in);
     }
@@ -19,11 +21,13 @@ public class Register {
     public String getUsername() {
         System.out.println("=== REGISTRAR ===");
         System.out.print("Introduce tu usuario : ");
+        
         return scanner.nextLine();
     }
     
     public Integer getPort() {
         System.out.print("Introduce el puerto : ");
+        
         return Integer.parseInt(scanner.nextLine());
     }
     
@@ -32,5 +36,6 @@ public class Register {
             System.out.print("\033[H\033[2J");
             System.out.flush();
         }
-    }    
+    } 
+    
 }

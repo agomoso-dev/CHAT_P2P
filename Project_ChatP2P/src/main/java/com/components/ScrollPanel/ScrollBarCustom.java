@@ -12,6 +12,7 @@ import javax.swing.JScrollBar;
 
 public class ScrollBarCustom extends JScrollBar implements Serializable {
     
+    /** Propiedades **/
     private static final long serialVersionUID = 1L;
     
     public ScrollBarCustom() {
@@ -23,7 +24,7 @@ public class ScrollBarCustom extends JScrollBar implements Serializable {
         setOpaque(false);
     }
     
-    // Getters and setters for properties
+    // Getters y Setters
     public Color getScrollForeground() {
         return getForeground();
     }

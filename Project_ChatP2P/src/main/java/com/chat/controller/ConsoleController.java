@@ -23,12 +23,17 @@ import com.chat.ui.cui.Register;
  * @author wenfi
  */
 public class ConsoleController implements ViewManager {
-    private Login loginWindow;
-    private Register registerWindow;
-    private Chat chatWindow;
-    private AddContact addContactWindow;
-    private Scanner scanner;
-    private boolean isRunning;
+    
+   /** Propiedades **/
+    private Login loginWindow;             // Ventana de Login
+    private Register registerWindow;       // Ventana de Registro
+    private Chat chatWindow;               // Ventana del Chat
+    private AddContact addContactWindow;   // Ventana de Añadir Contacto
+    
+    private Scanner scanner;               // Scanner para lee
+    
+    private boolean isRunning;             // Estado de la consola
+    
     public boolean menuCenter=true;
 
     /**
@@ -56,7 +61,7 @@ public class ConsoleController implements ViewManager {
      * Maneja la selección del usuario y redirige a la opción correspondiente.
      */
     public void showInitialMenu() {
-            System.out.println("=== CHAT P2P ===");
+            System.out.println("=== WHATSABLUE  ===");
             System.out.println("1. Login");
             System.out.println("2. Register");
             System.out.println("3. Exit");
@@ -78,6 +83,7 @@ public class ConsoleController implements ViewManager {
                     }
                     break;
                 case "3":
+                    System.out.println("\n¡Hasta luego!");
                     menuCenter=false;
                     System.exit(0);
                     break;
@@ -88,10 +94,13 @@ public class ConsoleController implements ViewManager {
             }
         
     }
+    
+    /** Limpia la pantalla **/
     private void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
+    
     /**
      * Procesa la entrada continua del usuario en el chat.
      * Maneja comandos especiales (empiezan con /) y mensajes normales.
@@ -102,25 +111,26 @@ public class ConsoleController implements ViewManager {
                 String input = scanner.nextLine().trim();
                 
                 if (input.equals("/menu")) {
-                    //showInitialMenu();
+                    showInitialMenu();
                 } else if (input.startsWith("/")) {
                     handleCommand(input);
                 } else {
                     handleMessage(input);
                 }
             } catch (Exception e) {
-                showErrorMessage("Error: " + e.getMessage());
-                showInitialMenu();
+                showErrorMessage("Comando no reconocido. Vuelve a intentarlo con /help");
+                //showInitialMenu();
             }
         }
     }
+    
     /**
      * Procesa los comandos especiales del chat.
      * Comandos disponibles:
      * - /addcontact: Añade un nuevo contacto
      * - /contacts: Muestra la lista de contactos
      * - /connect <ip> <puerto>: Conecta con un peer
-     * - /disconnect <userId>: Desconecta de un usuario
+     * - /disconnect <contactId>: Desconecta de un usuario
      * - /select <id>: Selecciona un chat
      * - /help: Muestra los comandos disponibles
      * - /exit: Cierra la aplicación
@@ -129,40 +139,70 @@ public class ConsoleController implements ViewManager {
      */
     private void handleCommand(String command) {
         String[] parts = command.split(" ");
+
         switch (parts[0]) {
             case "/addcontact":
                 showAddContactWindow();
                 break;
+
             case "/contacts":
                 chatWindow.displayContacts();
                 break;
-            case "/conect":
+
+            case "/connect":
                 if (parts.length > 2) {
                     String ip = parts[1];
                     try {
                         int port = Integer.parseInt(parts[2]);
-                        if(ChatManager.getInstance().connectToPeer(ip, port)){
-                            showMessage("Conectado "+ ip + ":" + port);
-                            showMessage("Usa /select para hablar con él");
-                        }
+                        ChatManager.getInstance().handleConnectionToPeer(ip, port);
                     } catch (NumberFormatException e) {
                         showErrorMessage("El puerto debe ser un número");
                     }
-                 }                
+                } else {
+                    showErrorMessage("Uso: /connect <IP> <PUERTO>");
+                }
                 break;
-            case "/disconnect":
 
+            case "/disconnect":
+                if (parts.length > 1) {
+                    String contactIdToDisconnect = parts[1];
+                    String peerIdToDisconnect = ChatManager.getInstance().getPeerIdByContactId(contactIdToDisconnect);
+                    ChatManager.getInstance().handleDisconnection(contactIdToDisconnect, peerIdToDisconnect);
+                } else {
+                    showErrorMessage("Uso: /disconnect <contact_id>");
+                }
                 break;
+
             case "/select":
-            
+                if (parts.length > 1) {
+                    String contactIdToSelect = parts[1];
+                    String peerIdToSelect = ChatManager.getInstance().getPeerIdByContactId(contactIdToSelect);
+                    ChatManager.getInstance().handleSelectedContact(peerIdToSelect);
+                } else {
+                    showErrorMessage("Uso: /select <contact_id>");
+                }
+                break;
+
+            case "/file":
+                if (parts.length > 1) {
+                    String filePath = parts[1];
+                    ChatManager.getInstance().handleFileMessageSentCUI(filePath);
+                } else {
+                    showErrorMessage("Uso: /file <ruta_del_archivo>");
+                }
+                break;
+            case "/id":
+                System.out.println("Mi ID es: " + User.getCurrentUser().getUserId());
                 break;
             case "/help":
                 showChatWindow();
+                break;
+
             case "/exit":
-                System.out.println("salida");
-                isRunning = false;
+                System.out.println("\n¡Hasta luego!");
                 System.exit(0);
                 break;
+
             default:
                 System.out.println("Comando no reconocido. Use /help para ver los comandos disponibles.");
         }
@@ -179,6 +219,7 @@ public class ConsoleController implements ViewManager {
             ChatManager.getInstance().handleTextMessageSent(msg);
         }
     }
+    
     /**
      * Gestiona el proceso de login del usuario.
      * Obtiene el ID del usuario y lo valida antes de iniciar sesión.
@@ -191,6 +232,7 @@ public class ConsoleController implements ViewManager {
         }
         ChatManager.getInstance().handleLogin(userId);
     }
+    
     /**
      * Gestiona el proceso de registro de un nuevo usuario.
      * Obtiene username y puerto, y los valida antes de registrar.
@@ -209,6 +251,7 @@ public class ConsoleController implements ViewManager {
         
         ChatManager.getInstance().handleRegister(username, port, null);
     }
+    
     /**
      * Gestiona el proceso de añadir un nuevo contacto.
      * Obtiene IP y puerto del nuevo contacto y los valida.
@@ -235,10 +278,7 @@ public class ConsoleController implements ViewManager {
         System.out.println("ERROR: " + message);
     }
 
-    /**
-     * Muestra la ventana de chat y sus comandos disponibles.
-     * Inicia el procesamiento de entrada del usuario.
-     */
+    /** Muestra la ventana de chat y sus comandos disponibles */
     @Override
     public void showChatWindow() {
         chatWindow.setVisible(true);
@@ -246,16 +286,19 @@ public class ConsoleController implements ViewManager {
         handleUserInput(); 
     }
 
+    /** Muestra la ventana de Registro **/
     private void showRegisterWindow() {
         loginWindow.setVisible(false);
         registerWindow.setVisible(true);
     }
 
+    /** Muestra la ventana de Login **/
     private void showLoginWindow() {
         registerWindow.setVisible(false);
         loginWindow.setVisible(true);
     }
 
+    /** Muestra la ventana de Añadir Contacto **/
     private void showAddContactWindow() {
         chatWindow.setVisible(false);
         addContactWindow.setVisible(true);

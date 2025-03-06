@@ -4,11 +4,8 @@
  */
 package com.chat.ui.gui;
 
-import com.chat.model.User;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JLabel;
 
 /**

@@ -20,11 +20,19 @@ public class ChatServer {
     /** Constructor privado Singleton **/
     private ChatServer(int port) {
         if (!validate(port)) {
-            throw new IllegalArgumentException("Puerto fuera del rango válido");
+            System.out.println("Puerto fuera del rango válido");
+            this.port = -1;
+            this.running = false;
+            return;
+            //throw new IllegalArgumentException("Puerto fuera del rango válido");
         }
 
         if (!available(port)) {
-            throw new IllegalArgumentException("Puerto no válido");
+            System.out.println("Puerto no válido");
+            this.port = -1;
+            this.running = false;
+            return;
+            //throw new IllegalArgumentException("Puerto no válido");
         }
 
         this.port = port;
@@ -120,14 +128,11 @@ public class ChatServer {
         try {
             if (serverSocket.isClosed()) return;
 
-            System.out.println("Escuchando");
             Socket socket = serverSocket.accept();
-            System.out.println("Nueva conexión desde " + socket.getInetAddress().getHostAddress());
 
             PeerConnection peerConnection = new PeerConnection(socket);
             handleConnection(peerConnection);
             
-            System.out.println("Conexion creada");
             new Thread(new ClientHandler(peerConnection)).start();
         } catch (IOException ex) {
             System.out.println("Error aceptando conexión " + ex.getMessage());

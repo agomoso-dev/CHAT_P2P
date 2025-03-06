@@ -219,7 +219,7 @@ public class UIController implements ViewManager {
     
     /** Gestiona el flujo de enviar un mensaje en la app **/
     private void manageFileSent() {
-        ChatManager.getInstance().handleFileMessageSent();
+        ChatManager.getInstance().handleFileMessageSentGUI();
     }
     
     /** Gestiona el flujo de añadir un nuevo contacto en la app **/
@@ -267,14 +267,18 @@ public class UIController implements ViewManager {
     /** MÉTODOS PARA ACTUALIZAR LA INTERFAZ **/
 
     /** Actualiza la lista de contactos de la ventana del Chat
-     * @param contacts **/
+     * 
+     * @param contacts Lista de contactos del Usuario actual
+    **/
     @Override
     public void setContactsList(List<User> contacts){
         chatWindow.setContactsList(contacts);
     }
     
     /** Muestra los contactos en la ventana de Chat
-     * @param contacts **/
+     * 
+     * @param contacts Lista de contactos del Usuario actual
+    **/
     @Override
     public void displayContacts(List<User> contacts) {
         chatWindow.setContactsList(contacts);
@@ -282,44 +286,55 @@ public class UIController implements ViewManager {
     
     /** Crea un nuevo panel de Contacto
      * @param contact
-     * @param peerId **/
+     * @param peerId 
+    **/
     @Override
     public void createContactPanel(User contact, String peerId) {
         chatWindow.createPanelContact(contact, peerId);
     }
     
     /** Actualiza un Panel de Contacto
-     * @param userId
-     * @param peerId
-     * @param connected **/
+     * 
+     * @param userId ID del contacto
+     * @param peerId ID de la conexión Peer del contacto
+     * @param connected true si está conectado, falso si no lo está
+    **/
     @Override
     public void updateContactPanel(String userId, String peerId, boolean connected) {
         chatWindow.updateContactPanel(userId, peerId, connected);
     }
     
     /** Establece el panel del Peer seleccionado como marcado
-     * @param contactId **/
+     * 
+     * @param contactId ID del contacto
+    **/
     @Override
     public void setContactPanelAsSelected(String contactId){
         chatWindow.setContactPanelAsSelected(contactId);
     }
     
     /** Muestra un chat en la pantalla de Chat
-     * @param messageHistory **/
+     * 
+     * @param messageHistory Historial de mensajes
+     **/
     @Override
     public void displayChat(List<MessageEntry> messageHistory){
         chatWindow.displayChat(messageHistory);
     }
     
     /** Muestra una entrada de mensaje de texto en la pantalla de Chat
-     * @param messageEntry **/
+     * 
+     * @param messageEntry Mensaje recibido
+    **/
     @Override
     public void displayTextMessage(MessageEntry messageEntry){
         chatWindow.displayTextMessage(messageEntry);
     }
     
     /** Muestra una entrada de mensaje de archivo en la pantalla de Chat
-     * @param messageEntry **/
+     * 
+     * @param messageEntry Mensaje recibido
+    **/
     @Override
     public void displayFileMessage(MessageEntry messageEntry){
         chatWindow.displayFileMessage(messageEntry);
@@ -329,6 +344,7 @@ public class UIController implements ViewManager {
     
     /**
      * Muestra una ventana con un mensaje informativo
+     * 
      * @param message Mensaje a mostrar
      */
     @Override
@@ -342,6 +358,7 @@ public class UIController implements ViewManager {
 
     /**
      * Muestra una ventana de error con un mensaje
+     * 
      * @param message Mensaje a mostrar
      */
     @Override

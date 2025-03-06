@@ -22,14 +22,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
 
 public class ChatManager {
 
     /** Propiedades **/
     private static ChatManager instance;                    // Singleton
     
-    //private UIController uiController;                    // UI Manager
-    //private ConsoleController consoleController;          // Console Manager
     private ViewManager viewManager;                        // View Manager
     
     private Map<String, PeerConnection> connections;        // Conexiones de Peers activas
@@ -70,19 +69,23 @@ public class ChatManager {
         
         this.chatSessions = new ConcurrentHashMap<>();
         
-        if (OSIdentifier().equals("windows")) {
-           this.viewManager = new UIController();
-        } else if (OSIdentifier().equals("linux")) {
-            this.viewManager = new ConsoleController();
-        } else {
-            //throw new UnsupportedOperationException("Sistema operativo no soportado: " + OSIdentifier());
+        switch (OSIdentifier()) {
+            case "windows":
+                this.viewManager = new UIController();
+                break;
+            case "linux":
+                this.viewManager = new ConsoleController();
+                break;
+            default:
+                throw new UnsupportedOperationException("Sistema operativo no soportado: " + OSIdentifier());
         }
     }
     
-    public ViewManager getViewmanager()
-    {
-        return this.viewManager;
-    }
+    /**
+     * Devuelve el ViewManager
+     * @return ViewManager
+     */
+    public ViewManager getViewmanager() { return this.viewManager; }
     
     /**
      * Identifica el sistema operativo actual del usuario
@@ -93,14 +96,10 @@ public class ChatManager {
         String osName = System.getProperty("os.name").toLowerCase();
             
             if (osName.contains("win")) {
-                System.out.println("Windows");
                 return "windows";
             } else if (osName.contains("nux")) {
-                System.out.println("Linux");
-
                 return "linux";
             } else if (osName.contains("nix")) {
-                System.out.println("Unix");
                 return "unix";
             } else if (osName.contains("mac")) {
                 return "macOS";
@@ -108,6 +107,7 @@ public class ChatManager {
                 System.out.println("Sistema operativo desconocido");
                 return "desconocido";
             }
+            
     }
     
     /**
@@ -124,6 +124,9 @@ public class ChatManager {
             @Override
             public void onError(String errorMessage) {
                 viewManager.showErrorMessage("No se ha encontrado ningún usuario con el siguiente ID: " + userId);
+                if (viewManager instanceof ConsoleController c) {
+                    c.showInitialMenu();
+                }
             }
             
         });
@@ -159,6 +162,7 @@ public class ChatManager {
                         if (viewManager instanceof ConsoleController c){
                             c.showInitialMenu();
                         }
+                        
                     } else {
                         registerNewUser(user);
                     }
@@ -282,24 +286,23 @@ public class ChatManager {
     * @return True si la conexión fue exitosa, false en caso contrario
     */
     public boolean connectToPeer(String ip, Integer port){
-    try {
-        ChatClient chatClient = new ChatClient();
-        chatClient.connect(ip, port);
-        String contactId = ip + ":" + port;
-        
-        registerNewConnection(contactId, chatClient);
-        
-        viewManager.showMessage("Conectado exitosamente a " + contactId);
-        
-        sendInfoUserMessage(chatClient.getPeerConnection());
-        
-        return true;
-    } catch(IOException e) {
-        viewManager.showErrorMessage("No se ha podido realizar la conexión: " + e.getMessage());
-        e.printStackTrace(); // Esto imprimirá la traza de la excepción
-        return false;
+        try {
+            ChatClient chatClient = new ChatClient();
+            chatClient.connect(ip, port);
+            String contactId = ip + ":" + port;
+
+            registerNewConnection(contactId, chatClient);
+
+            viewManager.showMessage("Conectado exitosamente a " + contactId);
+
+            sendInfoUserMessage(chatClient.getPeerConnection());
+
+            return true;
+        } catch(IOException e) {
+            viewManager.showErrorMessage("No se ha podido realizar la conexión: " + e.getMessage());
+            return false;
+        }
     }
-}
 
     /**
      * Gestiona una desconexión externa, avisando al Peer de que nos desconectamos de él
@@ -523,7 +526,12 @@ public class ChatManager {
         
         PeerConnection peerConnection = connections.get(peerId);
         if (actualPeer != null && peerConnection.equals(actualPeer)) {
-            viewManager.displayTextMessage(messageEntry);
+            if (viewManager instanceof ConsoleController c) {
+                List<MessageEntry> messageHistory = chatSession.getMessageHistory();
+                viewManager.displayChat(messageHistory);
+            } else {
+                viewManager.displayTextMessage(messageEntry);
+            }
         }
     }
     
@@ -577,7 +585,12 @@ public class ChatManager {
 
         PeerConnection peerConnection = connections.get(peerId);
         if (actualPeer != null && peerConnection.equals(actualPeer)) {
-            viewManager.displayFileMessage(messageEntry);
+            if (viewManager instanceof ConsoleController c) {
+                List<MessageEntry> messageHistory = chatSession.getMessageHistory();
+                viewManager.displayChat(messageHistory);
+            } else {
+                viewManager.displayFileMessage(messageEntry);
+            }
         }
     }
     
@@ -619,48 +632,105 @@ public class ChatManager {
                 MessageEntry messageEntry = new MessageEntry(User.getCurrentUser(), message);
                 
                 chatSession.addMessage(User.getCurrentUser(), messageEntry);
+                
+                if (viewManager instanceof ConsoleController c) {
+                    List<MessageEntry> messageHistory = chatSession.getMessageHistory();
+                    viewManager.displayChat(messageHistory);
+                } else {
+                    viewManager.displayTextMessage(new MessageEntry(User.getCurrentUser(), message));
+                }
             }
-
-            viewManager.displayTextMessage(new MessageEntry(User.getCurrentUser(), message));
         } catch (IOException ex) {
             Logger.getLogger(ChatManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     /**
-     * Gestiona la creación y envío de un mensaje de tipo File
+     * Gestiona la creación y envío de un mensaje de tipo File para la interfaz gráfica
      */
-    public void handleFileMessageSent() {
+    public void handleFileMessageSentGUI() {
         if (actualPeer == null) {
             viewManager.showErrorMessage("No hay un contacto seleccionado para enviar el mensaje");
             return;
         }
-        
+
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showOpenDialog(null);
-        
+
         if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-                        
+            final File selectedFile = fileChooser.getSelectedFile();
+            final PeerConnection peerToSend = actualPeer;
+
+            viewManager.showMessage("Enviando archivo: " + selectedFile.getName() + "...");
+
+            new Thread(() -> {
+                try {
+                    Message fileMessage = Message.createFileMessage(selectedFile);
+
+                    peerToSend.sendMessage(fileMessage);
+                    User contact = getContactByPeerId(peerToSend.getPeerId());
+                    if (contact != null) {
+                        ChatSession chatSession = getOrCreateChatSession(contact.getUserId());
+                        MessageEntry messageEntry = new MessageEntry(User.getCurrentUser(), fileMessage);
+                        chatSession.addMessage(User.getCurrentUser(), messageEntry);
+                    }
+
+                    SwingUtilities.invokeLater(() -> {
+                        viewManager.displayFileMessage(new MessageEntry(User.getCurrentUser(), fileMessage));
+                        viewManager.showMessage("Archivo enviado: " + selectedFile.getName());
+                    });
+                } catch (IOException ex) {
+                    SwingUtilities.invokeLater(() -> {
+                        viewManager.showErrorMessage("Error al enviar el archivo: " + ex.getMessage());
+                    });
+                    Logger.getLogger(ChatManager.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }).start();
+        }
+    }
+
+    /**
+     * Gestiona la creación y envío de un mensaje de tipo File para la interfaz de consola
+     * 
+     * @param filePath Ruta del archivo a enviar
+     */
+    public void handleFileMessageSentCUI(String filePath) {
+        if (actualPeer == null) {
+            viewManager.showErrorMessage("No hay un contacto seleccionado para enviar el mensaje");
+            return;
+        }
+
+        File selectedFile = new File(filePath);
+        if (!selectedFile.exists()){
+            viewManager.showErrorMessage("Por favor, introduce una ruta válida");
+            return;
+        }
+
+        viewManager.showMessage("Enviando archivo: " + selectedFile.getName() + "...");
+
+        final PeerConnection peerToSend = actualPeer;
+
+        new Thread(() -> {
             try {
                 Message fileMessage = Message.createFileMessage(selectedFile);
-                
-                actualPeer.sendMessage(fileMessage);
 
-                User contact = getContactByPeerId(actualPeer.getPeerId());
+                peerToSend.sendMessage(fileMessage);
+                User contact = getContactByPeerId(peerToSend.getPeerId());
                 if (contact != null) {
                     ChatSession chatSession = getOrCreateChatSession(contact.getUserId());
                     MessageEntry messageEntry = new MessageEntry(User.getCurrentUser(), fileMessage);
-
                     chatSession.addMessage(User.getCurrentUser(), messageEntry);
-                }
 
-                viewManager.displayFileMessage(new MessageEntry(User.getCurrentUser(), fileMessage));
-                viewManager.showMessage("Archivo enviado: " + selectedFile.getName());
+                    List<MessageEntry> messageHistory = chatSession.getMessageHistory();
+                    
+                    viewManager.displayChat(messageHistory);
+                    viewManager.showMessage("Archivo enviado: " + selectedFile.getName());
+                }
             } catch (IOException ex) {
+                viewManager.showErrorMessage("Error al enviar el archivo: " + ex.getMessage());
                 Logger.getLogger(ChatManager.class.getName()).log(Level.SEVERE, null, ex);
-            } 
-        }
+            }
+        }).start();
     }
     
     /**
@@ -788,6 +858,24 @@ public class ChatManager {
         }
         
         return contactId != null ? contacts.get(contactId) : null;
+    }
+    
+    /**
+     * Busca un contacto por su ID del Peer
+     * 
+     * @param contactId ID de la conexión Peer
+     * @return ID de la conexión Peer si existe, null en caso contarrio
+     */
+    public String getPeerIdByContactId(String contactId){
+        if (contactId == null) return null;
+
+        if (contactIdToPeerIdMap.size() == 0) {
+            return null;
+        }
+        
+        String peerId = contactIdToPeerIdMap.get(contactId);
+        
+        return peerId != null ? peerId : null;
     }
     
     /**

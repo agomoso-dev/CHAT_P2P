@@ -13,6 +13,7 @@ import java.io.Serializable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+
 /**
  * Componente personalizado para mostrar avatares de usuario con bordes redondeados.
  * Extiende JLabel para mostrar imágenes y permite personalizar el radio de las esquinas.
@@ -20,11 +21,16 @@ import javax.swing.JLabel;
  * @author wenfi
  */
 public class Avatar extends JLabel implements Serializable {
+    
+    /** Propiedades **/
     private static final long serialVersionUID = 1L;
+    
     private static final String DEFAULT_IMAGE_PATH = "/imagenes/";
     private static final String DEFAULT_BACKGROUND = "default_avatar.png";
+    
     private int cornerRadius = 0;
     private Shape shape;
+    
     private String imagePath = "";
 
     /**
@@ -48,6 +54,7 @@ public class Avatar extends JLabel implements Serializable {
             setBackground(Color.WHITE);
         }
     }
+    
     /**
      * Dibuja el componente con las características personalizadas.
      * Aplica el recorte redondeado y centra la imagen si existe.
