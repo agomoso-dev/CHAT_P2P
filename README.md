@@ -1,6 +1,6 @@
-# 📱 CHAT_P2P  
+# 📱 WhatsBlue  
 
-**CHAT_P2P** es una aplicación de mensajería instantánea desarrollada en **Java**, similar a WhatsApp, pero con un diseño distintivo en tonos azules. Se centra en la comunicación mediante **hilos de conversación**, ofreciendo una experiencia organizada y moderna.  
+**WhatsBlue** es una aplicación de mensajería instantánea desarrollada en **Java**, similar a WhatsApp, pero con un diseño distintivo en tonos azules. Se centra en la comunicación mediante **hilos de conversación**, ofreciendo una experiencia organizada y moderna.  
 
 La aplicación está conectada con **Firebase** a través de una API para gestionar usuarios, mensajes, multimedia y sincronización en tiempo real.  
 
