@@ -28,6 +28,3 @@ La aplicación está conectada con **Firebase** a través de una API para gestio
 - **Diseño:** UI personalizada en azul  
 
 ---
-
-## 📂 Estructura del proyecto  
-
