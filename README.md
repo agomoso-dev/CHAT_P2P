@@ -20,7 +20,7 @@ La aplicación está conectada con **Firebase** a través de una API para gestio
 
 ## Tecnologías utilizadas  
 
-- **Lenguaje:** Java ☕  
+- **Lenguaje:** Java 
 - **Backend & Realtime DB:** Firebase (Firestore / Realtime Database)  
 - **Almacenamiento:** Firebase Storage (para multimedia)  
 - **Autenticación:** Firebase Auth  
