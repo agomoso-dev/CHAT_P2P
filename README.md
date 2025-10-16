@@ -1,30 +1,26 @@
 # WhatsBlue  
 
-**WhatsBlue** es una aplicación de mensajería instantánea desarrollada en **Java**, similar a WhatsApp, pero con un diseño distintivo en tonos azules. Se centra en la comunicación mediante **hilos de conversación**, ofreciendo una experiencia organizada y moderna.  
+**WhatsBlue** es una app de mensajería instantánea, parecida a WhatsApp, que fue creada en **Java** y se caracteriza por su diseño peculiar en azules. Se enfoca en la comunicación a través de **hilos de conversación**, proporcionando una experiencia moderna y estructurada.  
 
-La aplicación está conectada con **Firebase** a través de una API para gestionar usuarios, mensajes, multimedia y sincronización en tiempo real.  
-
----
-
-## Características  
-
-- **Interfaz personalizada en azul** para diferenciarse de otros chats.  
-- **Mensajería en tiempo real** gracias a la integración con Firebase.  
-- **Soporte de hilos**: organiza las conversaciones de manera más clara y estructurada.  
-- **Autenticación segura** de usuarios mediante Firebase Authentication.  
-- **Base de datos en la nube** con Firebase Firestore / Realtime Database.  
-- **Envío de archivos y multimedia**: imágenes, vídeos, audios y documentos.  
-- **Escalable** y listo para añadir más funciones como notificaciones push.  
+La aplicación emplea una API para conectarse con **Firebase** y manejar usuarios, multimedia, mensajes y sincronización en tiempo real.  
 
 ---
 
-## Tecnologías utilizadas  
+## Rasgos  
 
-- **Lenguaje:** Java 
-- **Backend & Realtime DB:** Firebase (Firestore / Realtime Database)  
-- **Almacenamiento:** Firebase Storage (para multimedia)  
-- **Autenticación:** Firebase Auth  
-- **Notificaciones (opcional):** Firebase Cloud Messaging  
-- **Diseño:** UI personalizada en azul  
+- **Interfaz personalizada en azul** para distinguirse de otros chats.  
+- **Mensajería en tiempo real** debido a la integración con Firebase.  
+- **Soporte de hilos**: permite que las charlas se organicen de manera más ordenada y clara.  
+- **Autenticación de usuarios segura** a través de Firebase Authentication.  
+- **Base de datos en la nube** a través de Firebase Firestore o Realtime Database.  
+- **Remisión de archivos y multimedia**: imágenes, videos, audios y documentos.  
+- **Escalable** y preparado para incorporar más funcionalidades, como las notificaciones push.  
 
 ---
+| Área               | Tecnologías                              |
+| ------------------ | ---------------------------------------- |
+| **Lenguaje**       | Java                                     |
+| **Backend / DB**   | Firebase (Firestore / Realtime Database) |
+| **Almacenamiento** | Firebase Storage (para multimedia)       |
+| **Diseño / UI**    | Interfaz personalizada en tonos azules   |
+
